@@ -53,6 +53,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "interrupt_manager.h"
 #include "i2c1.h"
 #include "eusart2.h"
+#include "eusart1.h"
 
 #define _XTAL_FREQ  16000000
 

@@ -12,6 +12,7 @@
         <itemPath>mcc_generated_files/pin_manager.h</itemPath>
         <itemPath>mcc_generated_files/interrupt_manager.h</itemPath>
         <itemPath>mcc_generated_files/mcc.h</itemPath>
+        <itemPath>mcc_generated_files/eusart1.h</itemPath>
       </logicalFolder>
       <itemPath>e-i2c.h</itemPath>
       <itemPath>i2c-interface.h</itemPath>
@@ -31,6 +32,7 @@
         <itemPath>mcc_generated_files/pin_manager.c</itemPath>
         <itemPath>mcc_generated_files/interrupt_manager.c</itemPath>
         <itemPath>mcc_generated_files/mcc.c</itemPath>
+        <itemPath>mcc_generated_files/eusart1.c</itemPath>
       </logicalFolder>
       <itemPath>e-i2c.c</itemPath>
       <itemPath>i2c-interface.c</itemPath>
@@ -57,7 +59,7 @@
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC8</languageToolchain>
         <languageToolchainVersion>1.35</languageToolchainVersion>
-        <platform>4</platform>
+        <platform>2</platform>
       </toolsSet>
       <compileType>
         <linkerTool>
