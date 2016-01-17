@@ -2,6 +2,29 @@
 #include "eusart1extra.h"
 #include <stdint.h>
 
+/* called once on startup */
+void ax12Setup() {
+    restart(axid);  
+    restart(axid2);
+    axWrite(axid, 24, 1); // Enable Torque
+    axWrite(axid2, 24, 1);
+    //delay(100);
+    axWrite(axid, 18, 2); // Shutdown ssi surchauffe
+    axWrite(axid2, 18, 2);
+    //delay(100);
+    setWheelMode(axid);
+    setWheelMode(axid2);  
+    //delay(100);
+    setAxSpeed(axid, 1023);
+    setAxSpeed(axid2, 2047);
+}
+
+/* called in the main loop : performs all the needed updates */
+void ax12Manager() {
+    
+}
+
+
 void axWrite(uint8_t id, uint8_t reg, uint8_t val) {
   uint8_t buff[8];
   buff[0] = 0xFF;

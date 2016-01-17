@@ -1,4 +1,4 @@
-#
+ #
 #  There exist several targets which are by default empty and which can be 
 #  used for execution of your targets. These targets are usually executed 
 #  before and after some main targets. They are: 
@@ -16,7 +16,7 @@
 #
 #  Targets beginning with '.' are not intended to be called on their own.
 #
-#  Main targets can be executed directly, and they are:
+#  Main targets can be executed directly, and  they are:
 #  
 #     build                    build a specific configuration
 #     clean                    remove built files from a configuration
