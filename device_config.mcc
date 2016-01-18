@@ -75,7 +75,7 @@
             <setting name="EBTR0" option="OFF"/>
             <setting name="EBTRB" option="OFF"/>
             <setting name="generateConfigBits" option="true"/>
-            <file checksum="2087207436" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
+            <file checksum="4124835511" modified="true" name="mcc.c" path="mcc_generated_files/mcc.c"/>
             <file checksum="978657644" modified="false" name="mcc.h" path="mcc_generated_files/mcc.h"/>
         </manager>
     </managers>
@@ -187,18 +187,18 @@
                 <setting name="SYNC" option="asynchronous" register="TX1STA"/>
                 <setting name="BRGH" option="hi_speed" register="TX1STA"/>
                 <setting name="CSRC" option="slave_mode" register="TX1STA"/>
-                <setting name="SPBRGL" option="160" register="SPBRG1"/>
-                <setting name="SPBRGH" option="1" register="SPBRGH1"/>
+                <setting name="SPBRGL" option="34" register="SPBRG1"/>
+                <setting name="SPBRGH" option="0" register="SPBRGH1"/>
                 <setting name="TXREG" option="0" register="TXREG1"/>
                 <setting name="RCREG" option="0" register="RCREG1"/>
-                <additionalSetting name="baudrateString" option="9600"/>
+                <additionalSetting name="baudrateString" option="115200"/>
             </initializer>
             <setting name="RCI" option="false"/>
             <setting name="TXI" option="false"/>
             <setting name="inputBuffer" option="8"/>
             <setting name="outputBuffer" option="8"/>
             <setting name="stdio" option="false"/>
-            <file checksum="4044787200" modified="false" name="eusart1.c" path="mcc_generated_files/eusart1.c"/>
+            <file checksum="4220275974" modified="true" name="eusart1.c" path="mcc_generated_files/eusart1.c"/>
             <file checksum="2381341408" modified="false" name="eusart1.h" path="mcc_generated_files/eusart1.h"/>
         </module>
     </modules>

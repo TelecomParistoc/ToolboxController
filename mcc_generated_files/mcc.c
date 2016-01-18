@@ -1,5 +1,3 @@
-
-
 // Configuration bits: selected in the GUI
 
 // CONFIG1H
