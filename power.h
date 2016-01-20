@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-void powerManager();
+inline void powerManager();
 
 
 #ifdef	__cplusplus

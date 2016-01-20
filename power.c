@@ -19,7 +19,7 @@ inline void powerManager() {
             ADC_StartConversion(channel_AN0);
         } else if(!counter) { // means a conversion has just finished
             uint16_t powerLevel = ADC_GetConversionResult();
-            if(powerLevel < LOW THRESHOLD) {
+            if(powerLevel < LOW_THRESHOLD) {
                 logicPowerLevel = 0;
             } else {
                 logicPowerLevel = (powerLevel - LOW_THRESHOLD) >> 1;
