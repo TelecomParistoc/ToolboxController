@@ -12,18 +12,20 @@ uint8_t logicPowerLevel = 0;
 inline void powerManager() {
     static unsigned char counter = 0;
     if(ADC_IsConversionDone()) {
-        counter++;
         // skip some calls to wait inbetween conversions
         if(counter&0x80) { 
             counter = 0;
             ADC_StartConversion(channel_AN0);
-        } else if(!counter) { // means a conversion has just finished
-            uint16_t powerLevel = ADC_GetConversionResult();
-            if(powerLevel < LOW_THRESHOLD) {
-                logicPowerLevel = 0;
-            } else {
-                logicPowerLevel = (powerLevel - LOW_THRESHOLD) >> 1;
+        } else {
+            if(!counter) { // means a conversion has just finished
+                uint16_t powerLevel = ADC_GetConversionResult();
+                if(powerLevel < LOW_THRESHOLD) {
+                    logicPowerLevel = 0;
+                } else {
+                    logicPowerLevel = (powerLevel - LOW_THRESHOLD) >> 1;
+                }
             }
-        } 
+            counter++;
+        }
     }
 }
