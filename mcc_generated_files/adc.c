@@ -19,8 +19,8 @@ void ADC_Initialize(void) {
     // PVCFG VDD; TRIGSEL CTMU; NVCFG VSS; 
     ADCON1 = 0x80;
 
-    // ADFM left; ACQT 20; ADCS FOSC/64; 
-    ADCON2 = 0x3E;
+    // ADFM right; ACQT 20; ADCS FOSC/64; 
+    ADCON2 = 0xBE;
 
     // ADRESL 0x0; 
     ADRESL = 0x00;

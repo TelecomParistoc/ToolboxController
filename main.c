@@ -1,6 +1,7 @@
 #include "mcc_generated_files/mcc.h"
 #include "i2c-interface.h"
 #include "ax12.h"
+#include "power.h"
 
 /*
                          Main application
@@ -18,7 +19,7 @@ void main(void) {
     
     ax12Setup();
     while (1) {
-        
+        //powerManager();
     }
 }
 /**
