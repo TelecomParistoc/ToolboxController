@@ -1,21 +1,21 @@
 /**
-  @Generated MPLAB® Code Configurator Header File
+  CCP5 Generated Driver File
 
-  @Company:
+  @Company
     Microchip Technology Inc.
 
-  @File Name:
-    mcc.h
+  @File Name
+    ccp5.c
 
-  @Summary:
-    This is the mcc.h file generated using MPLAB® Code Configurator
+  @Summary
+    This is the generated driver implementation file for the CCP5 driver using MPLAB® Code Configurator
 
-  @Description:
-    This header file provides implementations for driver APIs for all modules selected in the GUI.
+  @Description
+    This source file provides APIs for CCP5.
     Generation Information :
         Product Revision  :  MPLAB® Code Configurator - v2.25.2
         Device            :  PIC18F46K22
-        Version           :  1.02
+        Driver Version    :  2.00
     The generated drivers are tested against the following:
         Compiler          :  XC8 v1.34
         MPLAB             :  MPLAB X v2.35 or v3.00
@@ -44,55 +44,56 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
  */
 
-#ifndef MCC_H
-#define	MCC_H
+/**
+  Section: Included Files
+ */
+
 #include <xc.h>
-#include "pin_manager.h"
-#include <stdint.h>
-#include <stdbool.h>
-#include "interrupt_manager.h"
-#include "i2c1.h"
-#include "eusart2.h"
-#include "eusart1.h"
-#include "tmr1.h"
 #include "ccp5.h"
-#include "tmr2.h"
-#include "pwm4.h"
-#include "epwm1.h"
-#include "epwm2.h"
-#include "epwm3.h"
-#include "adc.h"
-
-#define _XTAL_FREQ  16000000
 
 /**
- * @Param
-    none
- * @Returns
-    none
- * @Description
-    Initializes the device to the default states configured in the
- *                  MCC GUI
- * @Example
-    SYSTEM_Initialize(void);
+  Section: Capture Module APIs
  */
-void SYSTEM_Initialize(void);
 
-/**
- * @Param
-    none
- * @Returns
-    none
- * @Description
-    Initializes the oscillator to the default states configured in the
- *                  MCC GUI
- * @Example
-    OSCILLATOR_Initialize(void);
- */
-void OSCILLATOR_Initialize(void);
+void CCP5_Initialize(void) {
+    // Set the CCP5 to the options selected in the User Interface
 
+    // DC5B LSBs; CCP5M capture_risingedge; 
+    CCP5CON = 0x05;
 
-#endif	/* MCC_H */
+    // CCPR5L 0x0; 
+    CCPR5L = 0x00;
+
+    // CCPR5H 0x0; 
+    CCPR5H = 0x00;
+
+    // Clear the CCP5 interrupt flag
+    PIR4bits.CCP5IF = 0;
+
+    // Enable the CCP5 interrupt
+    PIE4bits.CCP5IE = 1;
+
+    // Selecting Timer1
+    CCPTMRS1bits.C5TSEL = 0x0;
+}
+
+void CCP5_CaptureISR(void) {
+    CCP_PERIOD_REG_T module;
+
+    // Clear the CCP5 interrupt flag
+    PIR4bits.CCP5IF = 0;
+
+    // Copy captured value.
+    module.ccpr5l = CCPR5L;
+    module.ccpr5h = CCPR5H;
+
+    // Return 16bit captured value
+    CCP5_CallBack(module.ccpr5_16Bit);
+}
+
+void CCP5_CallBack(uint16_t capturedValue) {
+    // Add your code here
+}
 /**
  End of File
  */

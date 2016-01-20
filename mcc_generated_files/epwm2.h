@@ -1,21 +1,21 @@
 /**
-  Generated Pin Manager File
+  ECCP2 Generated Driver File
 
-  Company:
+  @Company
     Microchip Technology Inc.
 
-  File Name:
-    pin_manager.c
+  @File Name
+    eccp2.c
 
-  Summary:
-    This is the Pin Manager file generated using MPLAB® Code Configurator
+  @Summary
+    This is the generated driver implementation file for the ECCP2 driver using MPLAB® Code Configurator
 
-  Description:
-    This header file provides implementations for pin APIs for all pins selected in the GUI.
+  @Description
+    This source file provides APIs for ECCP2.
     Generation Information :
         Product Revision  :  MPLAB® Code Configurator - v2.25.2
         Device            :  PIC18F46K22
-        Driver Version    :  1.02
+        Driver Version    :  2.00
     The generated drivers are tested against the following:
         Compiler          :  XC8 v1.34
         MPLAB             :  MPLAB X v2.35 or v3.00
@@ -44,35 +44,90 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
  */
 
+#ifndef _EPWM2_H
+#define _EPWM2_H
+
+/**
+  Section: Included Files
+ */
+
 #include <xc.h>
-#include "pin_manager.h"
+#include <stdint.h>
 
-void PIN_MANAGER_Initialize(void) {
-    LATA = 0x00;
-    TRISA = 0x03;
-    ANSELA = 0x03;
+#ifdef __cplusplus  // Provide C++ Compatibility
 
-    LATB = 0x00;
-    TRISB = 0xFF;
-    ANSELB = 0x00;
-    WPUB = 0x00;
+extern "C" {
 
-    LATC = 0x18;
-    TRISC = 0xF8;
-    ANSELC = 0x00;
+#endif
 
-    LATD = 0x00;
-    TRISD = 0xFC;
-    ANSELD = 0x00;
+    /**
+      Section: EPWM Module APIs
+     */
 
-    LATE = 0x00;
-    TRISE = 0x04;
-    ANSELE = 0x00;
+    /**
+    @Summary
+      Initializes the EPWM2
 
-    INTCON2bits.nRBPU = 0x01;
+    @Description
+      This routine initializes the EPWM2_Initialize.
+      This routine must be called before any other ECCP2 routine is called.
+      This routine should only be called once during system initialization.
 
+    @Preconditions
+      None
+
+    @Param
+      None
+
+    @Returns
+      None
+
+    @Comment
+    
+
+   @Example
+      <code>
+      uint16_t dutycycle;
+
+      EPWM2_Initialize();
+      EPWM2_LoadDutyValue(dutycycle);
+      </code>
+     */
+    void EPWM2_Initialize(void);
+
+    /**
+      @Summary
+        Loads 16-bit duty cycle.
+
+      @Description
+        This routine loads the 16 bit duty cycle value.
+
+      @Preconditions
+        EPWM2_Initialize() function should have been called before calling this function.
+
+      @Param
+        Pass in 16bit duty cycle value.
+
+      @Returns
+        None
+
+      @Example
+        <code>
+        uint16_t dutycycle;
+
+        EPWM2_Initialize();
+        EPWM2_LoadDutyValue(dutycycle);
+        </code>
+     */
+    void EPWM2_LoadDutyValue(uint16_t dutyValue);
+
+#ifdef __cplusplus  // Provide C++ Compatibility
 
 }
+
+#endif
+
+#endif  // _EPWM2_H
 /**
  End of File
  */

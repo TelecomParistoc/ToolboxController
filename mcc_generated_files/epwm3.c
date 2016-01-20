@@ -1,21 +1,21 @@
 /**
-  @Generated MPLAB® Code Configurator Header File
+  ECCP3 Generated Driver File
 
-  @Company:
+  @Company
     Microchip Technology Inc.
 
-  @File Name:
-    mcc.h
+  @File Name
+    eccp3.c
 
-  @Summary:
-    This is the mcc.h file generated using MPLAB® Code Configurator
+  @Summary
+    This is the generated driver implementation file for the ECCP3 driver using MPLAB® Code Configurator
 
-  @Description:
-    This header file provides implementations for driver APIs for all modules selected in the GUI.
+  @Description
+    This source file provides APIs for ECCP3.
     Generation Information :
         Product Revision  :  MPLAB® Code Configurator - v2.25.2
         Device            :  PIC18F46K22
-        Version           :  1.02
+        Driver Version    :  2.00
     The generated drivers are tested against the following:
         Compiler          :  XC8 v1.34
         MPLAB             :  MPLAB X v2.35 or v3.00
@@ -44,55 +44,56 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
  */
 
-#ifndef MCC_H
-#define	MCC_H
+/**
+  Section: Included Files
+ */
+
 #include <xc.h>
-#include "pin_manager.h"
-#include <stdint.h>
-#include <stdbool.h>
-#include "interrupt_manager.h"
-#include "i2c1.h"
-#include "eusart2.h"
-#include "eusart1.h"
-#include "tmr1.h"
-#include "ccp5.h"
-#include "tmr2.h"
-#include "pwm4.h"
-#include "epwm1.h"
-#include "epwm2.h"
 #include "epwm3.h"
-#include "adc.h"
-
-#define _XTAL_FREQ  16000000
 
 /**
- * @Param
-    none
- * @Returns
-    none
- * @Description
-    Initializes the device to the default states configured in the
- *                  MCC GUI
- * @Example
-    SYSTEM_Initialize(void);
+  Section: Macro Declarations
  */
-void SYSTEM_Initialize(void);
+
+#define PWM3_INITIALIZE_DUTY_VALUE    2
 
 /**
- * @Param
-    none
- * @Returns
-    none
- * @Description
-    Initializes the oscillator to the default states configured in the
- *                  MCC GUI
- * @Example
-    OSCILLATOR_Initialize(void);
+  Section: EPWM Module APIs
  */
-void OSCILLATOR_Initialize(void);
+
+void EPWM3_Initialize(void) {
+    // Set the PWM to the options selected in MPLAB® Code Configurator
+
+    // DC3B 32; CCP3M P3AP3Chi_P3BP3Dhi; P3M single; 
+    CCP3CON = 0x2C;
+
+    // CCP3ASE operating; CCP3AS disabled; PSS3BD P3BP3D_0; PSS3AC P3AP3C_0; 
+    ECCP3AS = 0x00;
+
+    // P3RSEN automatic_restart; P3DC 0; 
+    PWM3CON = 0x80;
+
+    // STR3A P3A_to_CCP3M; STR3C P3C_to_port; STR3B P3B_to_port; STR3D P3D_to_port; STR3SYNC start_at_begin; 
+    PSTR3CON = 0x01;
+
+    // CCPR3L 0; 
+    CCPR3L = 0x00;
+
+    // CCPR3H 0x0; 
+    CCPR3H = 0x00;
 
 
-#endif	/* MCC_H */
+    // Selecting Timer2
+    CCPTMRS0bits.C3TSEL = 0x0;
+}
+
+void EPWM3_LoadDutyValue(uint16_t dutyValue) {
+    // Writing to 8 MSBs of pwm duty cycle in CCPRL register
+    CCPR3L = ((dutyValue & 0x03FC) >> 2);
+
+    // Writing to 2 LSBs of pwm duty cycle in CCPCON register
+    CCP3CON = (CCP3CON & 0xCF) | ((dutyValue & 0x0003) << 4);
+}
 /**
  End of File
  */

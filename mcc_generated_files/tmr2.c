@@ -1,21 +1,21 @@
 /**
-  @Generated MPLAB® Code Configurator Header File
+  TMR2 Generated Driver File
 
-  @Company:
+  @Company
     Microchip Technology Inc.
 
-  @File Name:
-    mcc.h
+  @File Name
+    tmr2.c
 
-  @Summary:
-    This is the mcc.h file generated using MPLAB® Code Configurator
+  @Summary
+    This is the generated driver implementation file for the TMR2 driver using MPLAB® Code Configurator
 
-  @Description:
-    This header file provides implementations for driver APIs for all modules selected in the GUI.
+  @Description
+    This source file provides APIs for TMR2.
     Generation Information :
         Product Revision  :  MPLAB® Code Configurator - v2.25.2
         Device            :  PIC18F46K22
-        Version           :  1.02
+        Driver Version    :  2.00
     The generated drivers are tested against the following:
         Compiler          :  XC8 v1.34
         MPLAB             :  MPLAB X v2.35 or v3.00
@@ -44,55 +44,72 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 (INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
  */
 
-#ifndef MCC_H
-#define	MCC_H
+/**
+  Section: Included Files
+ */
+
 #include <xc.h>
-#include "pin_manager.h"
-#include <stdint.h>
-#include <stdbool.h>
-#include "interrupt_manager.h"
-#include "i2c1.h"
-#include "eusart2.h"
-#include "eusart1.h"
-#include "tmr1.h"
-#include "ccp5.h"
 #include "tmr2.h"
-#include "pwm4.h"
-#include "epwm1.h"
-#include "epwm2.h"
-#include "epwm3.h"
-#include "adc.h"
-
-#define _XTAL_FREQ  16000000
 
 /**
- * @Param
-    none
- * @Returns
-    none
- * @Description
-    Initializes the device to the default states configured in the
- *                  MCC GUI
- * @Example
-    SYSTEM_Initialize(void);
+  Section: TMR2 APIs
  */
-void SYSTEM_Initialize(void);
 
+void TMR2_Initialize(void) {
+    // Set TMR2 to the options selected in the User Interface
+
+    // TMR2ON off; T2OUTPS 1:1; T2CKPS 1:1; 
+    T2CON = 0x00;
+
+    // PR2 95; 
+    PR2 = 0x5F;
+
+    // TMR2 0x0; 
+    TMR2 = 0x00;
+
+    // Clearing IF flag.
+    PIR1bits.TMR2IF = 0;
+
+    // Start TMR2
+    TMR2_StartTimer();
+}
+
+void TMR2_StartTimer(void) {
+    // Start the Timer by writing to TMRxON bit
+    T2CONbits.TMR2ON = 1;
+}
+
+void TMR2_StopTimer(void) {
+    // Stop the Timer by writing to TMRxON bit
+    T2CONbits.TMR2ON = 0;
+}
+
+uint8_t TMR2_ReadTimer(void) {
+    uint8_t readVal;
+
+    readVal = TMR2;
+
+    return readVal;
+}
+
+void TMR2_WriteTimer(uint8_t timerVal) {
+    // Write to the Timer2 register
+    TMR2 = timerVal;
+}
+
+void TMR2_LoadPeriodRegister(uint8_t periodVal) {
+    PR2 = periodVal;
+}
+
+bool TMR2_HasOverflowOccured(void) {
+    // check if  overflow has occurred by checking the TMRIF bit
+    bool status = PIR1bits.TMR2IF;
+    if (status) {
+        // Clearing IF flag.
+        PIR1bits.TMR2IF = 0;
+    }
+    return status;
+}
 /**
- * @Param
-    none
- * @Returns
-    none
- * @Description
-    Initializes the oscillator to the default states configured in the
- *                  MCC GUI
- * @Example
-    OSCILLATOR_Initialize(void);
- */
-void OSCILLATOR_Initialize(void);
-
-
-#endif	/* MCC_H */
-/**
- End of File
+  End of File
  */
