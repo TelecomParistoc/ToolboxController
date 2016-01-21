@@ -1,6 +1,8 @@
 #ifndef AX12_H
 #define AX12_H
 
+#include <stdint.h>
+
 /* called once on startup */
 void ax12Setup();
 
@@ -19,9 +21,10 @@ void setWheelMode(char id);
 void setDefaultMode(char id);
 void initAll();
 char readToFlush();
+uint16_t getPosition(uint8_t id);
 char isForcing(char id);
 
-#define axid 142
+#define axid 121
 #define axid2 143
 
 #endif

@@ -13,7 +13,7 @@ void ax12Setup() {
     //delay(100);
     setWheelMode(axid);
     //delay(100);
-    setAxSpeed(axid, 1023);
+    printf("La position est : %d\n", getPosition(axid));
 }
 
 /* called in the main loop : performs all the needed updates */
@@ -147,6 +147,16 @@ uint8_t readToFlush() {
   len = answ[3];
   serial1Read(answ, len);
   return answ[0];
+}
+
+uint16_t getPosition(uint8_t id) {
+  axRead(id, 36, 2);
+  uint8_t answ[20];
+  uint8_t len;
+  serial1Read(answ, 4);
+  len = answ[3];
+  serial1Read(answ, len);
+  return 256*answ[2] + answ[1];
 }
 
 uint8_t isForcing(uint8_t id) {
