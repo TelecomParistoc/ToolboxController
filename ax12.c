@@ -1,22 +1,19 @@
 #include "ax12.h"
 #include "eusart1extra.h"
 #include <stdint.h>
+#include <stdio.h>
 
 /* called once on startup */
 void ax12Setup() {
-    restart(axid);  
-    restart(axid2);
+    printf("Hello World !\n");
+    initAll();  
     axWrite(axid, 24, 1); // Enable Torque
-    axWrite(axid2, 24, 1);
     //delay(100);
     axWrite(axid, 18, 2); // Shutdown ssi surchauffe
-    axWrite(axid2, 18, 2);
     //delay(100);
     setWheelMode(axid);
-    setWheelMode(axid2);  
     //delay(100);
     setAxSpeed(axid, 1023);
-    setAxSpeed(axid2, 2047);
 }
 
 /* called in the main loop : performs all the needed updates */
@@ -126,20 +123,19 @@ void setDefaultMode(uint8_t id) {
   readToFlush();
 }
 
-void restart(uint8_t id) {
+void initAll() {
   uint8_t buff[9];
   buff[0] = 0xFF;
   buff[1] = 0xFF;
-  buff[2] = id;
+  buff[2] = 0xFE;
   buff[3] = 0x05;
   buff[4] = 0x03;
   buff[5] = 34;
   buff[6] = 255;
   buff[7] = 3;
-  int foo = (34+258+8+id) % 256;
+  int foo = (34+258+8+254) % 256;
   buff[8] = 255-foo;
   serial1Write(buff, 9);
-  readToFlush();
 }
 
 

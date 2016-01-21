@@ -17,11 +17,11 @@ void setAxPosition(char id, int p);
 void setAxSpeed(char id, int p);
 void setWheelMode(char id);
 void setDefaultMode(char id);
-void restart(char id);
+void initAll();
 char readToFlush();
 char isForcing(char id);
 
-#define axid 133
+#define axid 142
 #define axid2 143
 
 #endif
