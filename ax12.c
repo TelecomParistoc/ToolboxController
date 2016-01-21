@@ -2,18 +2,40 @@
 #include "eusart1extra.h"
 #include <stdint.h>
 #include <stdio.h>
+#include "mcc_generated_files/pin_manager.h"
+#include <xc.h>
 
 /* called once on startup */
 void ax12Setup() {
     printf("Hello World !\n");
-    initAll();  
+    initAll();
     axWrite(axid, 24, 1); // Enable Torque
-    //delay(100);
-    axWrite(axid, 18, 2); // Shutdown ssi surchauffe
-    //delay(100);
-    setWheelMode(axid);
-    //delay(100);
-    printf("La position est : %d\n", getPosition(axid));
+    axWrite(axid, 18, 34); // Shutdown ssi surchauffe
+    axWrite(axid2, 24, 1); // Enable Torque
+    axWrite(axid2, 18, 34); // Shutdown ssi surchauffe
+    setDefaultMode(axid);
+    setDefaultMode(axid2);
+    setAxSpeed(axid, 50);
+    setAxSpeed(axid2, 50);
+    //setAxPosition(axid, rentre);
+    //setAxPosition(axid2, vertical);
+    setAxPosition(axid, horiz);
+    printf("Descendu1");
+    while(!SEN3_GetValue());
+    setAxPosition(axid, rentre);
+    printf("Monte1");
+    while(!SEN3_GetValue());
+    setAxPosition(axid, horiz);
+    printf("Descendu2");
+    while(!SEN3_GetValue());
+    setAxPosition(axid, rentre);
+    printf("Monte2");
+    while(!SEN3_GetValue());
+    setAxPosition(axid, horiz);
+    printf("Descendu3");
+    while(!SEN3_GetValue());
+    setAxPosition(axid2, lacher);
+    //printf("La position est : %d\n", getPosition(axid));
 }
 
 /* called in the main loop : performs all the needed updates */

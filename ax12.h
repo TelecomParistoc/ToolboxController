@@ -25,6 +25,12 @@ uint16_t getPosition(uint8_t id);
 char isForcing(char id);
 
 #define axid 121
-#define axid2 143
+#define axid2 148
+
+#define vertical 532
+#define lacher 300
+
+#define rentre 777
+#define horiz 463
 
 #endif
