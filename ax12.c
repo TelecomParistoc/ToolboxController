@@ -5,6 +5,8 @@
 #include "mcc_generated_files/pin_manager.h"
 #include <xc.h>
 
+char error;
+
 /* called once on startup */
 void ax12Setup() {
     printf("Hello World !\n");
@@ -13,25 +15,25 @@ void ax12Setup() {
     setDefaultMode(axid2);
     setSpeed(axid, 50);
     setSpeed(axid2, 50);
-    //setAxPosition(axid, rentre);
-    //setAxPosition(axid2, vertical);
-    /*setPosition(axid, horiz);
-    while(isMoving(axid));
-    printf("Descendu1");
-    setPosition(axid, rentre);
-    while(isMoving(axid));
-    printf("Monte1");
-    setPosition(axid, horiz);
-    while(isMoving(axid));
-    printf("Descendu2");
-    setPosition(axid, rentre);
-    while(isMoving(axid));
-    printf("Monte2");
-    setPosition(axid, horiz);
-    while(isMoving(axid));
-    printf("Descendu3");
-    setPosition(axid2, lacher);*/
     //printf("La position est : %d\n", getPosition(axid));
+    //setPosition(axid, rentre);
+    //setPosition(axid2, vertical);
+    setPosition(axid, horiz);
+    while(isMoving(axid));
+    printf("Descendu1\n");
+    setPosition(axid, rentre);
+    while(isMoving(axid));
+    printf("Monte1\n");
+    setPosition(axid, horiz);
+    while(isMoving(axid));
+    printf("Descendu2\n");
+    setPosition(axid, rentre);
+    while(isMoving(axid));
+    printf("Monte2\n");
+    setPosition(axid, horiz);
+    while(isMoving(axid));
+    printf("Descendu3\n");
+    setPosition(axid2, lacher);
 }
 
 /* called in the main loop : performs all the needed updates */
@@ -52,7 +54,7 @@ void initAll() {
   int foo = (34+258+8+254) % 256;
   buff[8] = 255-foo;
   serial1Write(buff, 9);
-  axWrite(254, 24, 1); // Enable torque
+  axWrite(0xFE, 24, 1); // Enable torque
   axWrite(254, 18, 2); // Shutdown ssi surchauffe
 }
 
@@ -69,7 +71,8 @@ void axWrite(uint8_t id, uint8_t reg, uint8_t val) {
   int foo = (7+id+reg+val) % 256;
   buff[7] = 255-foo;
   serial1Write(buff, 8);
-  readToFlush();
+  if(id != 254)
+    readToFlush();
 }
 
 void axRead(uint8_t id, uint8_t reg, uint8_t len) {
@@ -199,5 +202,8 @@ uint8_t isMoving(uint8_t id) {
   serial1Read(answ, 4);
   len = answ[3];
   serial1Read(answ, len);
+  error = answ[0];
+  if(error != 0)
+      printf("Erreur : %d\n", error);
   return answ[1];
 }

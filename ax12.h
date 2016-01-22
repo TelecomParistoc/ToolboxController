@@ -54,7 +54,7 @@ char isMoving(char id);
 
 /*Ax 12 qui positionne le système de pêche*/
 
-#define rentre 777
-#define horiz 463
+#define rentre 770
+#define horiz 480
 
 #endif
