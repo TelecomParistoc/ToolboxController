@@ -9,38 +9,51 @@
 void ax12Setup() {
     printf("Hello World !\n");
     initAll();
-    axWrite(axid, 24, 1); // Enable Torque
-    axWrite(axid, 18, 34); // Shutdown ssi surchauffe
-    axWrite(axid2, 24, 1); // Enable Torque
-    axWrite(axid2, 18, 34); // Shutdown ssi surchauffe
     setDefaultMode(axid);
     setDefaultMode(axid2);
-    setAxSpeed(axid, 50);
-    setAxSpeed(axid2, 50);
+    setSpeed(axid, 50);
+    setSpeed(axid2, 50);
     //setAxPosition(axid, rentre);
     //setAxPosition(axid2, vertical);
-    setAxPosition(axid, horiz);
+    /*setPosition(axid, horiz);
+    while(isMoving(axid));
     printf("Descendu1");
-    while(!SEN3_GetValue());
-    setAxPosition(axid, rentre);
+    setPosition(axid, rentre);
+    while(isMoving(axid));
     printf("Monte1");
-    while(!SEN3_GetValue());
-    setAxPosition(axid, horiz);
+    setPosition(axid, horiz);
+    while(isMoving(axid));
     printf("Descendu2");
-    while(!SEN3_GetValue());
-    setAxPosition(axid, rentre);
+    setPosition(axid, rentre);
+    while(isMoving(axid));
     printf("Monte2");
-    while(!SEN3_GetValue());
-    setAxPosition(axid, horiz);
+    setPosition(axid, horiz);
+    while(isMoving(axid));
     printf("Descendu3");
-    while(!SEN3_GetValue());
-    setAxPosition(axid2, lacher);
+    setPosition(axid2, lacher);*/
     //printf("La position est : %d\n", getPosition(axid));
 }
 
 /* called in the main loop : performs all the needed updates */
 void ax12Manager() {
     
+}
+
+void initAll() {
+  uint8_t buff[9];
+  buff[0] = 0xFF;
+  buff[1] = 0xFF;
+  buff[2] = 0xFE;
+  buff[3] = 0x05;
+  buff[4] = 0x03;
+  buff[5] = 34;
+  buff[6] = 255;
+  buff[7] = 3;
+  int foo = (34+258+8+254) % 256;
+  buff[8] = 255-foo;
+  serial1Write(buff, 9);
+  axWrite(254, 24, 1); // Enable torque
+  axWrite(254, 18, 2); // Shutdown ssi surchauffe
 }
 
 
@@ -73,7 +86,7 @@ void axRead(uint8_t id, uint8_t reg, uint8_t len) {
   serial1Write(buff, 8);
 }
 
-void setAxPosition(uint8_t id, int p) {
+void setPosition(uint8_t id, int p) {
   uint8_t buff[9];
   uint8_t low = p % 256;
   uint8_t high = p / 256;
@@ -91,7 +104,7 @@ void setAxPosition(uint8_t id, int p) {
   readToFlush();
 }
 
-void setAxSpeed(uint8_t id, int p) {
+void setSpeed(uint8_t id, int p) {
   uint8_t buff[9];
   uint8_t low = p % 256;
   uint8_t high = p / 256;
@@ -145,22 +158,6 @@ void setDefaultMode(uint8_t id) {
   readToFlush();
 }
 
-void initAll() {
-  uint8_t buff[9];
-  buff[0] = 0xFF;
-  buff[1] = 0xFF;
-  buff[2] = 0xFE;
-  buff[3] = 0x05;
-  buff[4] = 0x03;
-  buff[5] = 34;
-  buff[6] = 255;
-  buff[7] = 3;
-  int foo = (34+258+8+254) % 256;
-  buff[8] = 255-foo;
-  serial1Write(buff, 9);
-}
-
-
 uint8_t readToFlush() {
   //delay(40);
   uint8_t answ[20];
@@ -195,3 +192,12 @@ uint8_t isForcing(uint8_t id) {
   return ((error & 32) == 32);
 }
 
+uint8_t isMoving(uint8_t id) {
+  axRead(id, 46, 1);
+  uint8_t answ[20];
+  uint8_t len;
+  serial1Read(answ, 4);
+  len = answ[3];
+  serial1Read(answ, len);
+  return answ[1];
+}
