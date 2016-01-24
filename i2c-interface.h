@@ -11,10 +11,21 @@
 
 /***************     8-bit GET/SET COMMANDS     ***************/
 // (int8 arguments) : have to be mapped between 0x40 and 0x7F
-#define NUM_W8_CMD 1 // total number of SET commands, at least 1
-#define NUM_R8_CMD 1 // total number of GET commands, at least 1
+#define NUM_W8_CMD 5 // total number of SET commands, at least 1
+#define NUM_R8_CMD 6 // total number of GET commands, at least 1
 // the higher command should be lower than 0x40 + NUM_x8_CMD
 
+#define PWM1 0x41
+#define PWM2 0x42
+#define PWM3 0x43
+#define PWM4 0x44
+
+#define INTERRUPT_STATUS 0x40
+#define MOTOR_POWER_LEVEL 0x41
+#define LOGIC_POWER_LEVEL 0x42
+#define BUTTONS 0x43
+#define SENSORS 0x44
+#define COLLISIONS 0x45
 
 /***************     16-bit GET/SET COMMANDS     ***************/
 // (int16 arguments) : have to be mapped between 0x80 and 0xFF

@@ -1,8 +1,8 @@
 #include "i2c-interface.h"
 #include "e-i2c.h"
-
-void clearCoderCounters();
-int8_t getStatus();
+#include "interrupts.h"
+#include "power.h"
+#include "misc.h"
 
 // initialize e-i2c and configure the handlers here
 void configureI2Cinterface() {
@@ -11,8 +11,18 @@ void configureI2Cinterface() {
     // simple write commands
     
     //8 bit write commands
+    map8write(PWM1, setPWM1);
+    map8write(PWM2, setPWM2);
+    map8write(PWM3, setPWM3);
+    map8write(PWM4, setPWM4);
     
     //8 bit read commands
+    map8read(INTERRUPT_STATUS, readStatus);
+    map8read(MOTOR_POWER_LEVEL, getMotorPowerLevel);
+    map8read(LOGIC_POWER_LEVEL, getLogicPowerLevel);
+    map8read(BUTTONS, getButtons);
+    map8read(SENSORS, getSensors);
+    map8read(COLLISIONS, getCollisions);
     
     // 16 bit write commands
     
