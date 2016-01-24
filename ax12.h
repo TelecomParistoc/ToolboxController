@@ -12,8 +12,8 @@ void ax12Manager();
 // initializes all Ax-12
 void initAll();
 
-// Writes val in register reg of Ax-12(id)
-void axWrite(char id, char reg, char val);
+// Writes len first values in array vals in registers beginning at reg of Ax-12(id)
+void axWrite(uint8_t id, uint8_t reg, uint8_t * vals, uint8_t len);
 
 // reads len registers starting with register reg fom Ax-12(id)
 void axRead(char id, char reg, char len);

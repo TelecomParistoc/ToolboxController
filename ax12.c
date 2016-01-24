@@ -41,36 +41,22 @@ void ax12Manager() {
     
 }
 
-void initAll() {
-  uint8_t buff[9];
-  buff[0] = 0xFF;
-  buff[1] = 0xFF;
-  buff[2] = 0xFE;
-  buff[3] = 0x05;
-  buff[4] = 0x03;
-  buff[5] = 34;
-  buff[6] = 255;
-  buff[7] = 3;
-  int foo = (34+258+8+254) % 256;
-  buff[8] = 255-foo;
-  serial1Write(buff, 9);
-  axWrite(0xFE, 24, 1); // Enable torque
-  axWrite(254, 18, 2); // Shutdown ssi surchauffe
-}
-
-
-void axWrite(uint8_t id, uint8_t reg, uint8_t val) {
-  uint8_t buff[8];
+void axWrite(uint8_t id, uint8_t reg, uint8_t * vals, uint8_t len) {
+  uint8_t buff[20];
   buff[0] = 0xFF;
   buff[1] = 0xFF;
   buff[2] = id;
   buff[3] = 0x04;
   buff[4] = 0x03;
   buff[5] = reg;
-  buff[6] = val;
-  int foo = (7+id+reg+val) % 256;
-  buff[7] = 255-foo;
-  serial1Write(buff, 8);
+  int foo = 0;
+  for(uint8_t i = 0 ; i < len ; i ++){
+      buff[6 + i] = vals[i];
+      foo += vals[i];
+  }
+  foo += (7 + id + reg);
+  buff[6 + len] = 255 -(foo % 256);
+  serial1Write(buff, 7 + len);
   if(id != 254)
     readToFlush();
 }
@@ -89,80 +75,48 @@ void axRead(uint8_t id, uint8_t reg, uint8_t len) {
   serial1Write(buff, 8);
 }
 
+void initAll() {
+  uint8_t buff[2];
+  buff[0] = 255;
+  buff[1] = 3;
+  axWrite(254, 34, buff, 2);
+  buff[0] = 1;
+  axWrite(0xFE, 24, buff, 1); // Enable torque
+  buff[0] = 2;
+  axWrite(254, 18, buff, 1); // Shutdown ssi surchauffe
+}
+
 void setPosition(uint8_t id, int p) {
-  uint8_t buff[9];
-  uint8_t low = p % 256;
-  uint8_t high = p / 256;
-  buff[0] = 0xFF;
-  buff[1] = 0xFF;
-  buff[2] = id;
-  buff[3] = 0x05;
-  buff[4] = 0x03;
-  buff[5] = 30;
-  buff[6] = low;
-  buff[7] = high;
-  int foo = (38+id+buff[6]+buff[7]) % 256;
-  buff[8] = 255-foo;
-  serial1Write(buff, 9);
-  readToFlush();
+  uint8_t buff[2];
+  buff[0] = p % 256;
+  buff[1] = p / 256;
+  axWrite(id, 30, buff, 2);
 }
 
 void setSpeed(uint8_t id, int p) {
-  uint8_t buff[9];
-  uint8_t low = p % 256;
-  uint8_t high = p / 256;
-  buff[0] = 0xFF;
-  buff[1] = 0xFF;
-  buff[2] = id;
-  buff[3] = 0x05;
-  buff[4] = 0x03;
-  buff[5] = 32;
-  buff[6] = low;
-  buff[7] = high;
-  int foo = (40+id+buff[6]+buff[7]) % 256;
-  buff[8] = 255-foo;
-  serial1Write(buff, 9);
-  readToFlush();
+  uint8_t buff[2];
+  buff[0] = p % 256;
+  buff[1] = p / 256;
+  axWrite(id, 32, buff, 2);
 }
 
 void setWheelMode(uint8_t id) {
-  uint8_t buff[11];
-  buff[0] = 0xFF;
-  buff[1] = 0xFF;
-  buff[2] = id;
-  buff[3] = 0x07;
-  buff[4] = 0x03;
-  buff[5] = 6;
-  buff[6] = 0;
-  buff[7] = 0;
-  buff[8] = 0;
-  buff[9] = 0;
-  int foo = (16+id) % 256;
-  buff[10] = 255-foo;
-  serial1Write(buff, 11);
-  readToFlush();
+  uint8_t buff[4];
+  for(int i = 0 ; i < 4 ; i ++)
+      buff[i] = 0;
+  axWrite(id, 6, buff, 4);
 }
 
 void setDefaultMode(uint8_t id) {
-  uint8_t buff[11];
-  buff[0] = 0xFF;
-  buff[1] = 0xFF;
-  buff[2] = id;
-  buff[3] = 0x07;
-  buff[4] = 0x03;
-  buff[5] = 6;
-  buff[6] = 0;
-  buff[7] = 0;
-  buff[8] = 255;
-  buff[9] = 3;
-  int foo = (16+258+id) % 256;
-  buff[10] = 255-foo;
-  serial1Write(buff, 11);
-  readToFlush();
+  uint8_t buff[4];
+  buff[0] = 0;
+  buff[1] = 0;
+  buff[2] = 255;
+  buff[3] = 3;
+  axWrite(id, 6, buff, 4);
 }
 
 uint8_t readToFlush() {
-  //delay(40);
   uint8_t answ[20];
   uint8_t len;
   serial1Read(answ, 4);
