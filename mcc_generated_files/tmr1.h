@@ -330,41 +330,20 @@ extern "C" {
 
     /**
       @Summary
-        Get the TMR1 overflow status.
+        Implements ISR
 
       @Description
-        This routine get the TMR1 overflow status.
+        This routine is used to implement the ISR for the interrupt-driven
+        implementations.
 
-      @Preconditions
-        The TMR1_Initialize() routine should be called
-        prior to use this routine.
+      @Returns
+        None
 
       @Param
         None
-
-      @Returns
-        true  - Overflow has occured.
-        false - Overflow has not occured.
-
-      @Comment
-
-
-      @Example
-         <code>
-         TMR1_Initialize();
-
-         TMR1_StartTimer();
-
-        while(1)
-        {
-            if(TMR1_HasOverflowOccured())
-            {
-                TMR1_StopTimer();
-            }
-        }
-        </code>
      */
-    bool TMR1_HasOverflowOccured(void);
+    void TMR1_ISR(void);
+
 
 
 #ifdef __cplusplus  // Provide C++ Compatibility

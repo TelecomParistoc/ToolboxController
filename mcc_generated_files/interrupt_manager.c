@@ -61,6 +61,9 @@ void INTERRUPT_Initialize(void) {
     // CCPI - high priority
     IPR4bits.CCP5IP = 1;
 
+    // TMRI - high priority
+    IPR1bits.TMR1IP = 1;
+
 
 
 }
@@ -71,6 +74,8 @@ void interrupt INTERRUPT_InterruptManager(void) {
         I2C1_ISR();
     } else if (PIE4bits.CCP5IE == 1 && PIR4bits.CCP5IF == 1) {
         CCP5_CaptureISR();
+    } else if (PIE1bits.TMR1IE == 1 && PIR1bits.TMR1IF == 1) {
+        TMR1_ISR();
     } else {
         //Unhandled Interrupt
     }

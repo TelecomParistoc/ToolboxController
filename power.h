@@ -2,16 +2,10 @@
 #ifndef POWER_H
 #define	POWER_H
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
+#include <stdint.h>
 
 inline void powerManager();
-
-
-#ifdef	__cplusplus
-}
-#endif
+void setCCP5period(uint16_t period);
 
 #endif	/* POWER_H */
 
