@@ -64,7 +64,7 @@ inline void powerManager() {
         }
     }
     if(motorPowerLevelPeriod) {
-        uint16_t period = motorPowerLevelPeriod;
+        uint16_t period = motorPowerLevelPeriod >> 1;
         motorPowerLevelPeriod = 0; // we won't process this again until it is updated
         
         if(period < MOTOR_LOW_THRESHOLD)
