@@ -2,21 +2,22 @@
 #include "mcc_generated_files/adc.h"
 #include "mcc_generated_files/pin_manager.h"
 #include <xc.h>
+#include <stdio.h>
 
 // if the battery voltage is under this threshold (about 6V), the battery is likely 
 // to be either disconnect or kaput (Ja, Ja, Ja). Power level will be 0
-#define LOGIC_LOW_THRESHOLD 433
-#define MOTOR_LOW_THRESHOLD 175
+#define LOGIC_LOW_THRESHOLD 448
+#define MOTOR_LOW_THRESHOLD 300
 
-#define LOGIC_LOW_BAT 161
-#define LOGIC_MIDDLE_BAT 197
+#define LOGIC_LOW_BAT 153
+#define LOGIC_MIDDLE_BAT 185
 
-#define MOTOR_LOW_BAT 48
-#define MOTOR_MIDDLE_BAT 29
+#define MOTOR_LOW_BAT 88
+#define MOTOR_MIDDLE_BAT 53
 
 // battery voltage = (logicPowerLevel*2 + 433)*0.0139 (in volts)
 uint8_t logicPowerLevel = 0;
-// period = (motorPowerLevel+175)*2 (in microseconds)
+// period = (motorPowerLevel+300)*2 (in microseconds)
 // battery voltage = 10*R*C/period (in volts with period in seconds)
 uint8_t motorPowerLevel = 0;
 
@@ -64,9 +65,8 @@ inline void powerManager() {
         }
     }
     if(motorPowerLevelPeriod) {
-        uint16_t period = motorPowerLevelPeriod >> 1;
+        uint16_t period = motorPowerLevelPeriod;
         motorPowerLevelPeriod = 0; // we won't process this again until it is updated
-        
         if(period < MOTOR_LOW_THRESHOLD)
             motorPowerLevel = 0;
         else {

@@ -3,6 +3,7 @@
 #include "ax12.h"
 #include "power.h"
 #include "misc.h"
+#include <stdio.h>
 /*
                          Main application
  */
@@ -21,7 +22,7 @@ void main(void) {
     while (1) {
         //sensorManager();
         //collisionManager();
-        //powerManager();
+        powerManager();
     }
 }
 /**
