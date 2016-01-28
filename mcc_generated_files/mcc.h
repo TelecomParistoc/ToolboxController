@@ -14,7 +14,7 @@
     This header file provides implementations for driver APIs for all modules selected in the GUI.
     Generation Information :
         Product Revision  :  MPLAB® Code Configurator - v2.25.2
-        Device            :  PIC18F46K22
+        Device            :  PIC18F45K22
         Version           :  1.02
     The generated drivers are tested against the following:
         Compiler          :  XC8 v1.34
