@@ -3,6 +3,7 @@
 #include "ax12.h"
 #include "power.h"
 #include "misc.h"
+#include "mcc_generated_files/pin_manager.h"
 #include <stdio.h>
 /*
                          Main application

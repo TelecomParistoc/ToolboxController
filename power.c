@@ -25,23 +25,23 @@ uint16_t motorPowerLevelPeriod = 0;
 
 static void updateMotorPowerLEDs() {
     if(motorPowerLevel < MOTOR_LOW_BAT)
-        MOTORG_SetHigh();
-    else
         MOTORG_SetLow();
-    if(motorPowerLevel > MOTOR_MIDDLE_BAT)
-        MOTORR_SetHigh();
     else
+        MOTORG_SetHigh();
+    if(motorPowerLevel > MOTOR_MIDDLE_BAT)
         MOTORR_SetLow();
+    else
+        MOTORR_SetHigh();
 }
 static void updateLogicPowerLEDs() {
     if(logicPowerLevel > LOGIC_LOW_BAT)
-        LOGICG_SetHigh();
-    else
         LOGICG_SetLow();
-    if(logicPowerLevel < LOGIC_MIDDLE_BAT)
-        LOGICR_SetHigh();
     else
+        LOGICG_SetHigh();
+    if(logicPowerLevel < LOGIC_MIDDLE_BAT)
         LOGICR_SetLow();
+    else
+        LOGICR_SetHigh();
 }
 
 inline void powerManager() {

@@ -12,8 +12,8 @@ void ax12Setup() {
     printf("Hello World !\n");
     initAll();
     //setWheelMode(axid);
-    setDefaultMode(axid);
-    setSpeed(axid, 50);
+    setWheelMode(axid);
+    setSpeed(axid, 1500);
     //setSpeed(axid2, 50);
     //printf("La position est : %d\n", getPosition(axid));
     setPosition(axid, rentre);
