@@ -11,14 +11,14 @@ char error;
 void ax12Setup() {
     printf("Hello World !\n");
     initAll();
+    //setWheelMode(axid);
     setDefaultMode(axid);
-    setDefaultMode(axid2);
     setSpeed(axid, 50);
-    setSpeed(axid2, 50);
+    //setSpeed(axid2, 50);
     //printf("La position est : %d\n", getPosition(axid));
-    //setPosition(axid, rentre);
+    setPosition(axid, rentre);
     //setPosition(axid2, vertical);
-    setPosition(axid, horiz);
+    /*setPosition(axid, horiz);
     while(isMoving(axid));
     printf("Descendu1\n");
     setPosition(axid, rentre);
@@ -33,7 +33,7 @@ void ax12Setup() {
     setPosition(axid, horiz);
     while(isMoving(axid));
     printf("Descendu3\n");
-    setPosition(axid2, lacher);
+    setPosition(axid2, lacher);*/
 }
 
 /* called in the main loop : performs all the needed updates */
@@ -46,7 +46,7 @@ void axWrite(uint8_t id, uint8_t reg, uint8_t * vals, uint8_t len) {
   buff[0] = 0xFF;
   buff[1] = 0xFF;
   buff[2] = id;
-  buff[3] = 0x04;
+  buff[3] = len + 3;
   buff[4] = 0x03;
   buff[5] = reg;
   int foo = 0;
@@ -54,11 +54,11 @@ void axWrite(uint8_t id, uint8_t reg, uint8_t * vals, uint8_t len) {
       buff[6 + i] = vals[i];
       foo += vals[i];
   }
-  foo += (7 + id + reg);
+  foo += (len + 6 + id + reg);
   buff[6 + len] = 255 -(foo % 256);
   serial1Write(buff, 7 + len);
   if(id != 254)
-    readToFlush();
+    printf("%d\n", readToFlush());
 }
 
 void axRead(uint8_t id, uint8_t reg, uint8_t len) {
