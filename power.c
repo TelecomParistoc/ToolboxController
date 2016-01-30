@@ -85,6 +85,9 @@ void setCCP5period(uint16_t period) {
     // if timer overflown, ignore next measure
     if(period == 0) {
         isValid = 0;
+        // turn of the LED
+        MOTORR_SetHigh();
+        MOTORG_SetHigh();
         return;
     }
     if(isValid)
