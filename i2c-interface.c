@@ -15,6 +15,11 @@ void configureI2Cinterface() {
     map8write(PWM2, setPWM2);
     map8write(PWM3, setPWM3);
     map8write(PWM4, setPWM4);
+    map8write(LEDS, setLEDs);
+    map8write(LEDSSO, setOnlyLEDs);
+    map8write(LEDSCO, clearOnlyLEDs);
+    map8write(COLLMASK, setCollisionsMask);
+    map8write(SENMASK, setSensorsMask);
     
     //8 bit read commands
     map8read(INTERRUPT_STATUS, readStatus);

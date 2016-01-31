@@ -17,7 +17,12 @@ int8_t getButtons();
 int8_t getSensors();
 int8_t getCollisions();
 
+void setCollisionsMask(int8_t mask);
+void setSensorsMask(int8_t mask);
+
 void setLEDs(int8_t leds);
+void setOnlyLEDs(int8_t leds);
+void clearOnlyLEDs(int8_t leds);
 
 void setPWM1(int8_t value);
 void setPWM2(int8_t value);
