@@ -25,7 +25,6 @@
       <itemPath>e-i2c.h</itemPath>
       <itemPath>i2c-interface.h</itemPath>
       <itemPath>ax12.h</itemPath>
-      <itemPath>eusart1extra.h</itemPath>
       <itemPath>power.h</itemPath>
       <itemPath>misc.h</itemPath>
       <itemPath>interrupts.h</itemPath>
@@ -59,7 +58,6 @@
       <itemPath>i2c-interface.c</itemPath>
       <itemPath>main.c</itemPath>
       <itemPath>ax12.c</itemPath>
-      <itemPath>eusart1extra.c</itemPath>
       <itemPath>power.c</itemPath>
       <itemPath>misc.c</itemPath>
       <itemPath>interrupts.c</itemPath>
@@ -85,7 +83,7 @@
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC8</languageToolchain>
         <languageToolchainVersion>1.35</languageToolchainVersion>
-        <platform>4</platform>
+        <platform>2</platform>
       </toolsSet>
       <compileType>
         <linkerTool>
@@ -124,13 +122,13 @@
         <property key="optimization-invariant-value" value="16"/>
         <property key="optimization-level" value="9"/>
         <property key="optimization-set" value="default"/>
-        <property key="optimization-speed" value="true"/>
+        <property key="optimization-speed" value="false"/>
         <property key="preprocess-assembler" value="true"/>
         <property key="undefine-macros" value=""/>
         <property key="use-cci" value="false"/>
         <property key="use-iar" value="false"/>
         <property key="verbose" value="false"/>
-        <property key="warning-level" value="0"/>
+        <property key="warning-level" value="8"/>
         <property key="what-to-do" value="ignore"/>
       </HI-TECH-COMP>
       <HI-TECH-LINK>

@@ -1,11 +1,12 @@
 #include "ax12.h"
-#include "eusart1extra.h"
+#include "mcc_generated_files/eusart1.h"
 #include <stdint.h>
 #include <stdio.h>
-#include "mcc_generated_files/pin_manager.h"
 #include <xc.h>
 
-char error;
+uint8_t expected_answer_length;
+volatile uint8_t error;
+volatile uint16_t interrupt_answer;
 
 /* called once on startup */
 void ax12Setup() {
@@ -15,8 +16,9 @@ void ax12Setup() {
     setDefaultMode(axid2);
     setSpeed(axid, 50);
     setSpeed(axid2, 50);
-    printf("La position est : %d\n", getPosition(axid));
-    setPosition(axid, rentre);
+    getPosition(axid);
+    //getPosition(axid2);
+    //setPosition(axid, rentre);
     /*setPosition(axid, horiz);
     while(isMoving(axid));
     printf("Descendu1\n");
@@ -114,48 +116,23 @@ void setDefaultMode(uint8_t id) {
   axWrite(id, 6, buff, 4);
 }
 
-uint8_t readToFlush() {
-  uint8_t answ[20];
-  uint8_t len;
-  serial1Read(answ, 4);
-  len = answ[3];
-  serial1Read(answ, len);
-  return answ[0];
+void readBuffer() {
+  for(uint8_t i = 0 ; i < 5 ; i ++)
+      error = EUSART1_Read();
+  interrupt_answer = EUSART1_Read();
+  if (expected_answer_length == 8)
+      interrupt_answer += (EUSART1_Read() << 8); 
+  EUSART1_Read();
+  //TODO interrupter le Raspberry Pi
+  printf("On lit %d\n", interrupt_answer);
 }
 
-uint16_t getPosition(uint8_t id) {
+void getPosition(uint8_t id) {
+  expected_answer_length = 8; 
   axRead(id, 36, 2);
-  uint8_t answ[20];
-  uint8_t len;
-  serial1Read(answ, 4);
-  len = answ[3];
-  serial1Read(answ, len);
-  return (answ[2] << 8) + answ[1];
 }
 
-uint8_t isForcing(uint8_t id) {
-  uint8_t buff[6];
-  buff[0] = 0xFF;
-  buff[1] = 0xFF;
-  buff[2] = id;
-  buff[3] = 0x02;
-  buff[4] = 0x01;
-  uint8_t checksum = 3 + id;
-  buff[5] = 255 - checksum;
-  serial1Write(buff, 6);
-  uint8_t error = readToFlush();
-  return ((error & 32) == 32);
-}
-
-uint8_t isMoving(uint8_t id) {
+void Polling(uint8_t id) {
+  expected_answer_length = 7; 
   axRead(id, 46, 1);
-  uint8_t answ[20];
-  uint8_t len;
-  serial1Read(answ, 4);
-  len = answ[3];
-  serial1Read(answ, len);
-  error = answ[0];
-  if(error != 0)
-      printf("Erreur : %d\n", error);
-  return answ[1];
 }

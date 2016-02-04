@@ -16,7 +16,7 @@
     all modules selected in the GUI.
     Generation Information :
         Product Revision  :  MPLAB® Code Configurator - v2.25.2
-        Device            :  PIC18F46K22
+        Device            :  PIC18F45K22
         Driver Version    :  1.02
     The generated drivers are tested against the following:
         Compiler          :  XC8 v1.34
@@ -64,6 +64,12 @@ void INTERRUPT_Initialize(void) {
     // TMRI - high priority
     IPR1bits.TMR1IP = 1;
 
+    // RCI - high priority
+    IPR1bits.RC1IP = 1;
+
+    // TXI - high priority
+    IPR1bits.TX1IP = 1;
+
 
 
 }
@@ -76,6 +82,10 @@ void interrupt INTERRUPT_InterruptManager(void) {
         CCP5_CaptureISR();
     } else if (PIE1bits.TMR1IE == 1 && PIR1bits.TMR1IF == 1) {
         TMR1_ISR();
+    } else if (PIE1bits.RC1IE == 1 && PIR1bits.RC1IF == 1) {
+        EUSART1_Receive_ISR();
+    } else if (PIE1bits.TX1IE == 1 && PIR1bits.TX1IF == 1) {
+        EUSART1_Transmit_ISR();
     } else {
         //Unhandled Interrupt
     }

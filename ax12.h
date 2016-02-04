@@ -30,19 +30,14 @@ void setWheelMode(uint8_t id);
 // puts Ax-12(id) in the default mode
 void setDefaultMode(uint8_t id);
 
-// to flush a status packet from an Ax-12
-char readToFlush();
+// called by USART Interrupt
+void readBuffer();
 
 // returns the position of an Ax-12
-uint16_t getPosition(uint8_t id);
+void getPosition(uint8_t id);
 
-// returns true if Ax-12(id) is forcing
-char isForcing(uint8_t id);
-
-// returns true if Ax-12(id) is moving by its own power
-char isMoving(uint8_t id);
-
-
+// polls if Ax-12 is moving or forcing
+void Polling(uint8_t id);
 
 #define axid 121
 #define axid2 148
