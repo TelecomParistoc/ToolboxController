@@ -44,7 +44,7 @@ char isMoving(uint8_t id);
 
 
 
-#define axid 142
+#define axid 121
 #define axid2 148
 
 /*Ax 12 qui contrôle l'aimant*/
