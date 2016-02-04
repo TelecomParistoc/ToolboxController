@@ -16,19 +16,19 @@ void initAll();
 void axWrite(uint8_t id, uint8_t reg, uint8_t * vals, uint8_t len);
 
 // reads len registers starting with register reg fom Ax-12(id)
-void axRead(char id, char reg, char len);
+void axRead(uint8_t id, uint8_t reg, uint8_t len);
 
 // sets p as goal position for Ax-12(id)
-void setPosition(char id, int p);
+void setPosition(uint8_t id, uint16_t cons);
 
 // sets p as goal speed for Ax-12(id)
-void setSpeed(char id, int p);
+void setSpeed(uint8_t id, uint16_t cons);
 
 // puts Ax-12(id) in wheel mode
-void setWheelMode(char id);
+void setWheelMode(uint8_t id);
 
 // puts Ax-12(id) in the default mode
-void setDefaultMode(char id);
+void setDefaultMode(uint8_t id);
 
 // to flush a status packet from an Ax-12
 char readToFlush();
@@ -37,10 +37,10 @@ char readToFlush();
 uint16_t getPosition(uint8_t id);
 
 // returns true if Ax-12(id) is forcing
-char isForcing(char id);
+char isForcing(uint8_t id);
 
 // returns true if Ax-12(id) is moving by its own power
-char isMoving(char id);
+char isMoving(uint8_t id);
 
 
 

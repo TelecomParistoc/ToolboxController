@@ -49,13 +49,13 @@ void axWrite(uint8_t id, uint8_t reg, uint8_t * vals, uint8_t len) {
   buff[3] = len + 3;
   buff[4] = 0x03;
   buff[5] = reg;
-  int foo = 0;
+  uint8_t foo = 0;
   for(uint8_t i = 0 ; i < len ; i ++){
       buff[6 + i] = vals[i];
       foo += vals[i];
   }
-  foo += (len + 6 + id + reg);
-  buff[6 + len] = 255 -(foo % 256);
+  foo += len + 6 + id + reg;
+  buff[6 + len] = 255 - foo;
   serial1Write(buff, 7 + len);
   if(id != 254)
     printf("%d\n", readToFlush());
@@ -70,8 +70,8 @@ void axRead(uint8_t id, uint8_t reg, uint8_t len) {
   buff[4] = 0x02;
   buff[5] = reg;
   buff[6] = len;
-  int foo = (6+id+reg+len) % 256;
-  buff[7] = 255-foo;
+  uint8_t foo = 6 + id + reg + len;
+  buff[7] = 255 - foo;
   serial1Write(buff, 8);
 }
 
@@ -86,17 +86,17 @@ void initAll() {
   axWrite(254, 18, buff, 1); // Shutdown ssi surchauffe
 }
 
-void setPosition(uint8_t id, int p) {
+void setPosition(uint8_t id, uint16_t cons) {
   uint8_t buff[2];
-  buff[0] = p % 256;
-  buff[1] = p / 256;
+  buff[0] = (uint8_t) cons;
+  buff[1] = cons >> 8;
   axWrite(id, 30, buff, 2);
 }
 
-void setSpeed(uint8_t id, int p) {
+void setSpeed(uint8_t id, uint16_t cons) {
   uint8_t buff[2];
-  buff[0] = p % 256;
-  buff[1] = p / 256;
+  buff[0] = (uint8_t) cons;
+  buff[1] = cons >> 8;
   axWrite(id, 32, buff, 2);
 }
 
@@ -132,7 +132,7 @@ uint16_t getPosition(uint8_t id) {
   serial1Read(answ, 4);
   len = answ[3];
   serial1Read(answ, len);
-  return 256*answ[2] + answ[1];
+  return answ[2] << 8 + answ[1];
 }
 
 uint8_t isForcing(uint8_t id) {
@@ -142,8 +142,8 @@ uint8_t isForcing(uint8_t id) {
   buff[2] = id;
   buff[3] = 0x02;
   buff[4] = 0x01;
-  int foo = (3+id) % 256;
-  buff[5] = 255-foo;
+  uint8_t foo = 3 + id;
+  buff[5] = 255 - foo;
   serial1Write(buff, 6);
   uint8_t error = readToFlush();
   return ((error & 32) == 32);
