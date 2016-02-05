@@ -1,23 +1,24 @@
 #include "ax12.h"
-#include "eusart1extra.h"
+#include "mcc_generated_files/eusart1.h"
 #include <stdint.h>
 #include <stdio.h>
-#include "mcc_generated_files/pin_manager.h"
 #include <xc.h>
 
-char error;
+uint8_t expected_answer_length;
+volatile uint8_t error;
+volatile uint16_t interrupt_answer;
 
 /* called once on startup */
 void ax12Setup() {
     printf("Hello World !\n");
     initAll();
-    //setWheelMode(axid);
-    setWheelMode(axid);
-    setSpeed(axid, 1500);
-    //setSpeed(axid2, 50);
-    //printf("La position est : %d\n", getPosition(axid));
-    setPosition(axid, rentre);
-    //setPosition(axid2, vertical);
+    setDefaultMode(axid);
+    setDefaultMode(axid2);
+    setSpeed(axid, 50);
+    setSpeed(axid2, 50);
+    getPosition(axid);
+    //getPosition(axid2);
+    //setPosition(axid, rentre);
     /*setPosition(axid, horiz);
     while(isMoving(axid));
     printf("Descendu1\n");
@@ -49,16 +50,14 @@ void axWrite(uint8_t id, uint8_t reg, uint8_t * vals, uint8_t len) {
   buff[3] = len + 3;
   buff[4] = 0x03;
   buff[5] = reg;
-  uint8_t foo = 0;
+  uint8_t checksum = 0;
   for(uint8_t i = 0 ; i < len ; i ++){
       buff[6 + i] = vals[i];
-      foo += vals[i];
+      checksum += vals[i];
   }
-  foo += len + 6 + id + reg;
-  buff[6 + len] = 255 - foo;
+  checksum += len + 6 + id + reg;
+  buff[6 + len] = 255 - checksum;
   serial1Write(buff, 7 + len);
-  if(id != 254)
-    printf("%d\n", readToFlush());
 }
 
 void axRead(uint8_t id, uint8_t reg, uint8_t len) {
@@ -70,8 +69,8 @@ void axRead(uint8_t id, uint8_t reg, uint8_t len) {
   buff[4] = 0x02;
   buff[5] = reg;
   buff[6] = len;
-  uint8_t foo = 6 + id + reg + len;
-  buff[7] = 255 - foo;
+  uint8_t checksum = 6 + id + reg + len;
+  buff[7] = 255 - checksum;
   serial1Write(buff, 8);
 }
 
@@ -81,7 +80,8 @@ void initAll() {
   buff[1] = 3;
   axWrite(254, 34, buff, 2);
   buff[0] = 1;
-  axWrite(0xFE, 24, buff, 1); // Enable torque
+  axWrite(254, 24, buff, 1); // Enable torque
+  axWrite(254, 16, buff, 1); // Status return only if READ
   buff[0] = 2;
   axWrite(254, 18, buff, 1); // Shutdown ssi surchauffe
 }
@@ -116,48 +116,23 @@ void setDefaultMode(uint8_t id) {
   axWrite(id, 6, buff, 4);
 }
 
-uint8_t readToFlush() {
-  uint8_t answ[20];
-  uint8_t len;
-  serial1Read(answ, 4);
-  len = answ[3];
-  serial1Read(answ, len);
-  return answ[0];
+void readBuffer() {
+  for(uint8_t i = 0 ; i < 5 ; i ++)
+      error = EUSART1_Read();
+  interrupt_answer = EUSART1_Read();
+  if (expected_answer_length == 8)
+      interrupt_answer += (EUSART1_Read() << 8); 
+  EUSART1_Read();
+  //TODO interrupter le Raspberry Pi
+  printf("On lit %d\n", interrupt_answer);
 }
 
-uint16_t getPosition(uint8_t id) {
+void getPosition(uint8_t id) {
+  expected_answer_length = 8; 
   axRead(id, 36, 2);
-  uint8_t answ[20];
-  uint8_t len;
-  serial1Read(answ, 4);
-  len = answ[3];
-  serial1Read(answ, len);
-  return answ[2] << 8 + answ[1];
 }
 
-uint8_t isForcing(uint8_t id) {
-  uint8_t buff[6];
-  buff[0] = 0xFF;
-  buff[1] = 0xFF;
-  buff[2] = id;
-  buff[3] = 0x02;
-  buff[4] = 0x01;
-  uint8_t foo = 3 + id;
-  buff[5] = 255 - foo;
-  serial1Write(buff, 6);
-  uint8_t error = readToFlush();
-  return ((error & 32) == 32);
-}
-
-uint8_t isMoving(uint8_t id) {
+void Polling(uint8_t id) {
+  expected_answer_length = 7; 
   axRead(id, 46, 1);
-  uint8_t answ[20];
-  uint8_t len;
-  serial1Read(answ, 4);
-  len = answ[3];
-  serial1Read(answ, len);
-  error = answ[0];
-  if(error != 0)
-      printf("Erreur : %d\n", error);
-  return answ[1];
 }
