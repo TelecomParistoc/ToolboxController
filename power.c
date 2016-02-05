@@ -15,7 +15,7 @@
 #define MOTOR_LOW_BAT 88
 #define MOTOR_MIDDLE_BAT 53
 
-// battery voltage = (logicPowerLevel*2 + 433)*0.0139 (in volts)
+// battery voltage = (logicPowerLevel*2 + 448)*0.0139 (in volts)
 uint8_t logicPowerLevel = 0;
 // period = (motorPowerLevel+300)*2 (in microseconds)
 // battery voltage = 10*R*C/period (in volts with period in seconds)
