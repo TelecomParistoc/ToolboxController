@@ -21,6 +21,7 @@ void main(void) {
     
     ax12Setup();
     while (1) {
+        ax12Manager();
         /*sensorManager();
         collisionManager();
         powerManager();*/

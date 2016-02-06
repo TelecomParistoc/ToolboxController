@@ -23,8 +23,6 @@ static uint8_t eusart1RxTail = 0;
 static uint8_t eusart1RxBuffer[EUSART1_RX_BUFFER_SIZE];
 volatile uint8_t eusart1RxCount;
 
-extern uint8_t expected_answer_length;
-
 /**
   Section: EUSART1 APIs
  */
@@ -129,7 +127,7 @@ void EUSART1_Receive_ISR(void) {
     }
     eusart1RxCount++;
     if(eusart1RxCount == expected_answer_length){
-        readBuffer();
+        answer_status = 1;
     }
 }
 

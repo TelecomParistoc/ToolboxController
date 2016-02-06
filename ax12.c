@@ -4,9 +4,50 @@
 #include <stdio.h>
 #include <xc.h>
 
-uint8_t expected_answer_length;
-volatile uint8_t error;
-volatile uint16_t interrupt_answer;
+#define axid 121
+#define axid2 148
+
+/*Ax 12 qui contrôle l'aimant*/
+
+#define vertical 532
+#define lacher 300
+
+/*Ax 12 qui positionne le système de pêche*/
+
+#define rentre 770
+#define horiz 480
+
+static uint16_t interrupt_answer;
+
+// Initializes all Ax-12
+static void initAll();
+
+// Writes len first values in array vals in registers beginning at reg of Ax-12(id)
+static void axWrite(uint8_t id, uint8_t reg, uint8_t * vals, uint8_t len);
+
+// Asks to read len registers starting with register reg fom Ax-12(id)
+static void axRead(uint8_t id, uint8_t reg, uint8_t len);
+
+// Reads the answer of the last axRead call
+static void readBuffer();
+
+// sets p as goal position for Ax-12(id)
+static void setPosition(uint8_t id, uint16_t cons);
+
+// sets p as goal speed for Ax-12(id)
+static void setSpeed(uint8_t id, uint16_t cons);
+
+// puts Ax-12(id) in wheel mode
+static void setWheelMode(uint8_t id);
+
+// puts Ax-12(id) in the default mode
+static void setDefaultMode(uint8_t id);
+
+// asks the position of an Ax-12
+static void getPosition(uint8_t id);
+
+// checks if Ax-12 is moving
+static void isMoving(uint8_t id);
 
 /* called once on startup */
 void ax12Setup() {
@@ -39,7 +80,8 @@ void ax12Setup() {
 
 /* called in the main loop : performs all the needed updates */
 void ax12Manager() {
-    
+    if(answer_status == 1)
+        readBuffer();
 }
 
 void axWrite(uint8_t id, uint8_t reg, uint8_t * vals, uint8_t len) {
@@ -72,6 +114,18 @@ void axRead(uint8_t id, uint8_t reg, uint8_t len) {
   uint8_t checksum = 6 + id + reg + len;
   buff[7] = 255 - checksum;
   serial1Write(buff, 8);
+}
+
+void readBuffer() {
+  for(uint8_t i = 0 ; i < 5 ; i ++)
+      EUSART1_Read();
+  interrupt_answer = EUSART1_Read();
+  if (expected_answer_length == 8)
+      interrupt_answer += (EUSART1_Read() << 8); 
+  EUSART1_Read();
+  //TODO interrupter le Raspberry Pi
+  printf("On lit %d\n", interrupt_answer);
+  answer_status = 0;
 }
 
 void initAll() {
@@ -116,23 +170,13 @@ void setDefaultMode(uint8_t id) {
   axWrite(id, 6, buff, 4);
 }
 
-void readBuffer() {
-  for(uint8_t i = 0 ; i < 5 ; i ++)
-      error = EUSART1_Read();
-  interrupt_answer = EUSART1_Read();
-  if (expected_answer_length == 8)
-      interrupt_answer += (EUSART1_Read() << 8); 
-  EUSART1_Read();
-  //TODO interrupter le Raspberry Pi
-  printf("On lit %d\n", interrupt_answer);
-}
-
 void getPosition(uint8_t id) {
-  expected_answer_length = 8; 
+  expected_answer_length = 8;
+  answer_status = 0;
   axRead(id, 36, 2);
 }
 
-void Polling(uint8_t id) {
+void isMoving(uint8_t id) {
   expected_answer_length = 7; 
   axRead(id, 46, 1);
 }

@@ -35,7 +35,8 @@ extern "C" {
     /**
       Section: EUSART1 APIs
      */
-
+    volatile uint8_t expected_answer_length;
+    volatile uint8_t answer_status;
     /**
       @Summary
         Initialization routine that takes inputs from the EUSART1 GUI.
