@@ -1,8 +1,6 @@
 #ifndef AX12_H
 #define AX12_H
 
-#include <stdint.h>
-
 /* called once on startup */
 void ax12Setup();
 
