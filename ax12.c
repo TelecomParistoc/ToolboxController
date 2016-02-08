@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <xc.h>
 
-#define axid 121
-#define axid2 148
+#define axid  129
+#define axid2 130
 
 /*Ax 12 qui contrôle l'aimant*/
 
@@ -16,6 +16,14 @@
 
 #define rentre 770
 #define horiz 480
+
+/*Ax 12 pince sens horaire*/
+#define hrentre 757
+#define hsorti  338
+
+/*Ax 12 pince sens trigo*/
+#define trentre 330
+#define tsorti  670
 
 static uint16_t interrupt_answer;
 
@@ -31,11 +39,14 @@ static void axRead(uint8_t id, uint8_t reg, uint8_t len);
 // Reads the answer of the last axRead call
 static void readBuffer();
 
-// sets p as goal position for Ax-12(id)
+// sets cons as goal position for Ax-12(id)
 static void setPosition(uint8_t id, uint16_t cons);
 
-// sets p as goal speed for Ax-12(id)
+// sets cons as goal speed for Ax-12(id)
 static void setSpeed(uint8_t id, uint16_t cons);
+
+// sets cons as max torque for Ax-12(id)
+static void setMaxTorque(uint8_t id, uint16_t cons);
 
 // puts Ax-12(id) in wheel mode
 static void setWheelMode(uint8_t id);
@@ -57,25 +68,7 @@ void ax12Setup() {
     setDefaultMode(axid2);
     setSpeed(axid, 50);
     setSpeed(axid2, 50);
-    getPosition(axid);
-    //getPosition(axid2);
-    //setPosition(axid, rentre);
-    /*setPosition(axid, horiz);
-    while(isMoving(axid));
-    printf("Descendu1\n");
-    setPosition(axid, rentre);
-    while(isMoving(axid));
-    printf("Monte1\n");
-    setPosition(axid, horiz);
-    while(isMoving(axid));
-    printf("Descendu2\n");
-    setPosition(axid, rentre);
-    while(isMoving(axid));
-    printf("Monte2\n");
-    setPosition(axid, horiz);
-    while(isMoving(axid));
-    printf("Descendu3\n");
-    setPosition(axid2, lacher);*/
+    getPosition(axid2);
 }
 
 /* called in the main loop : performs all the needed updates */
@@ -152,6 +145,13 @@ void setSpeed(uint8_t id, uint16_t cons) {
   buff[0] = (uint8_t) cons;
   buff[1] = cons >> 8;
   axWrite(id, 32, buff, 2);
+}
+
+void setMaxTorque(uint8_t id, uint16_t cons) {
+  uint8_t buff[2];
+  buff[0] = (uint8_t) cons;
+  buff[1] = cons >> 8;
+  axWrite(id, 34, buff, 2);
 }
 
 void setWheelMode(uint8_t id) {

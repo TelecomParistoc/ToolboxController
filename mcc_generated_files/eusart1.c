@@ -2,6 +2,7 @@
   Section: Included Files
  */
 #include "eusart1.h"
+#include <stdio.h>
 
 /**
   Section: Macro Declarations
