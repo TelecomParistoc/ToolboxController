@@ -21,7 +21,8 @@ void configureI2Cinterface() {
     map8write(LEDSCO, clearOnlyLEDs);
     map8write(COLLMASK, setCollisionsMask);
     map8write(SENMASK, setSensorsMask);
-    map8write(SETACTIVE, setActiveId);
+    map8write(SETACTIVEWHEEL, masterSetActiveIdWheel);
+    map8write(SETACTIVEDEFAULT, masterSetActiveIdDefault);
     
     //8 bit read commands
     map8read(INTERRUPT_STATUS, readStatus);
@@ -32,7 +33,10 @@ void configureI2Cinterface() {
     map8read(COLLISIONS, getCollisions);
     
     // 16 bit write commands
-    
+    map16write(SETSPEEDWHEEL, masterSetSpeedWheel);
+    map16write(SETSPEEDDEFAULT, masterSetSpeedDefault);
+    map16write(SETPOSITION, masterSetPosition);
+    map16write(SETTORQUE, masterSetTorque);
     //16 bit read commands
 
 }

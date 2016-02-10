@@ -11,7 +11,7 @@
 
 /***************     8-bit GET/SET COMMANDS     ***************/
 // (int8 arguments) : have to be mapped between 0x40 and 0x7F
-#define NUM_W8_CMD 11 // total number of SET commands, at least 1
+#define NUM_W8_CMD 12 // total number of SET commands, at least 1
 #define NUM_R8_CMD 6 // total number of GET commands, at least 1
 // the higher command should be lower than 0x40 + NUM_x8_CMD
 
@@ -24,7 +24,8 @@
 #define LEDSCO 0x47
 #define COLLMASK 0x48
 #define SENMASK 0x49
-#define SETACTIVE 0x4A
+#define SETACTIVEWHEEL 0x4A
+#define SETACTIVEDEFAULT 0x4B
 
 #define INTERRUPT_STATUS 0x40
 #define MOTOR_POWER_LEVEL 0x41
@@ -35,10 +36,14 @@
 
 /***************     16-bit GET/SET COMMANDS     ***************/
 // (int16 arguments) : have to be mapped between 0x80 and 0xFF
-#define NUM_W16_CMD 1 // total number of SET commands, at least 1
+#define NUM_W16_CMD 5 // total number of SET commands, at least 1
 #define NUM_R16_CMD 1 // total number of GET commands, at least 1
 // the higher command should be lower than 0x80 + NUM_W16_CMD
 
+#define SETSPEEDWHEEL 0x81
+#define SETSPEEDDEFAULT 0x82
+#define SETPOSITION 0x83
+#define SETTORQUE 0x84
 
 // initialize e-i2c and configure the handlers here
 void configureI2Cinterface();

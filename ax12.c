@@ -77,20 +77,13 @@ void ax12Setup() {
 void ax12Manager() {
     if(order != NONE){
         switch(order){
-            case SET_WHEEL_MODE:
-                setWheelMode();
+            case SET_SPEED_WHEEL:
                 break;
-            case SET_DEFAULT_MODE:
-                setDefaultMode();
-                break;
-            case SET_SPEED:
-                setSpeed(parameter);
+            case SET_SPEED_DEFAULT:
                 break;
             case SET_POSITION:
-                setPosition(parameter);
                 break;
             case SET_TORQUE:
-                setMaxTorque(parameter);
                 break;
         }
         order = NONE;
