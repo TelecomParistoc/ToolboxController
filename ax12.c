@@ -25,50 +25,50 @@
 #define trentre 330
 #define tsorti  670
 
+volatile uint8_t activeID;
+volatile AX12state state;
 static uint16_t interrupt_answer;
+
 
 // Initializes all Ax-12
 static void initAll();
 
 // Writes len first values in array vals in registers beginning at reg of Ax-12(id)
-static void axWrite(uint8_t id, uint8_t reg, uint8_t * vals, uint8_t len);
+static void axWrite(uint8_t reg, uint8_t * vals, uint8_t len);
 
 // Asks to read len registers starting with register reg fom Ax-12(id)
-static void axRead(uint8_t id, uint8_t reg, uint8_t len);
+static void axRead(uint8_t reg, uint8_t len);
 
 // Reads the answer of the last axRead call
 static void readBuffer();
 
 // sets cons as goal position for Ax-12(id)
-static void setPosition(uint8_t id, uint16_t cons);
+static void setPosition(uint16_t cons);
 
 // sets cons as goal speed for Ax-12(id)
-static void setSpeed(uint8_t id, uint16_t cons);
+static void setSpeed(uint16_t cons);
 
 // sets cons as max torque for Ax-12(id)
-static void setMaxTorque(uint8_t id, uint16_t cons);
+static void setMaxTorque(uint16_t cons);
 
 // puts Ax-12(id) in wheel mode
-static void setWheelMode(uint8_t id);
+static void setWheelMode();
 
 // puts Ax-12(id) in the default mode
-static void setDefaultMode(uint8_t id);
+static void setDefaultMode();
 
 // asks the position of an Ax-12
-static void getPosition(uint8_t id);
+static void getPosition();
 
 // checks if Ax-12 is moving
-static void isMoving(uint8_t id);
+static void isMoving();
 
 /* called once on startup */
 void ax12Setup() {
     printf("Hello World !\n");
+    activeID = 254;
+    state = WHEEL_MODE;
     initAll();
-    setDefaultMode(axid);
-    setDefaultMode(axid2);
-    setSpeed(axid, 50);
-    setSpeed(axid2, 50);
-    getPosition(axid2);
 }
 
 /* called in the main loop : performs all the needed updates */
@@ -77,11 +77,11 @@ void ax12Manager() {
         readBuffer();
 }
 
-void axWrite(uint8_t id, uint8_t reg, uint8_t * vals, uint8_t len) {
+void axWrite(uint8_t reg, uint8_t * vals, uint8_t len) {
   uint8_t buff[20];
   buff[0] = 0xFF;
   buff[1] = 0xFF;
-  buff[2] = id;
+  buff[2] = activeID;
   buff[3] = len + 3;
   buff[4] = 0x03;
   buff[5] = reg;
@@ -90,21 +90,21 @@ void axWrite(uint8_t id, uint8_t reg, uint8_t * vals, uint8_t len) {
       buff[6 + i] = vals[i];
       checksum += vals[i];
   }
-  checksum += len + 6 + id + reg;
+  checksum += len + 6 + activeID + reg;
   buff[6 + len] = 255 - checksum;
   serial1Write(buff, 7 + len);
 }
 
-void axRead(uint8_t id, uint8_t reg, uint8_t len) {
+void axRead(uint8_t reg, uint8_t len) {
   uint8_t buff[8];
   buff[0] = 0xFF;
   buff[1] = 0xFF;
-  buff[2] = id;
+  buff[2] = activeID;
   buff[3] = 0x04;
   buff[4] = 0x02;
   buff[5] = reg;
   buff[6] = len;
-  uint8_t checksum = 6 + id + reg + len;
+  uint8_t checksum = 6 + activeID + reg + len;
   buff[7] = 255 - checksum;
   serial1Write(buff, 8);
 }
@@ -125,58 +125,58 @@ void initAll() {
   uint8_t buff[2];
   buff[0] = 255;
   buff[1] = 3;
-  axWrite(254, 34, buff, 2);
+  axWrite(34, buff, 2);
   buff[0] = 1;
-  axWrite(254, 24, buff, 1); // Enable torque
-  axWrite(254, 16, buff, 1); // Status return only if READ
+  axWrite(24, buff, 1); // Enable torque
+  axWrite(16, buff, 1); // Status return only if READ
   buff[0] = 2;
-  axWrite(254, 18, buff, 1); // Shutdown ssi surchauffe
+  axWrite(18, buff, 1); // Shutdown ssi surchauffe
 }
 
-void setPosition(uint8_t id, uint16_t cons) {
+void setPosition(uint16_t cons) {
   uint8_t buff[2];
   buff[0] = (uint8_t) cons;
   buff[1] = cons >> 8;
-  axWrite(id, 30, buff, 2);
+  axWrite(30, buff, 2);
 }
 
-void setSpeed(uint8_t id, uint16_t cons) {
+void setSpeed(uint16_t cons) {
   uint8_t buff[2];
   buff[0] = (uint8_t) cons;
   buff[1] = cons >> 8;
-  axWrite(id, 32, buff, 2);
+  axWrite(32, buff, 2);
 }
 
-void setMaxTorque(uint8_t id, uint16_t cons) {
+void setMaxTorque(uint16_t cons) {
   uint8_t buff[2];
   buff[0] = (uint8_t) cons;
   buff[1] = cons >> 8;
-  axWrite(id, 34, buff, 2);
+  axWrite(34, buff, 2);
 }
 
-void setWheelMode(uint8_t id) {
+void setWheelMode() {
   uint8_t buff[4];
   for(int i = 0 ; i < 4 ; i ++)
       buff[i] = 0;
-  axWrite(id, 6, buff, 4);
+  axWrite(6, buff, 4);
 }
 
-void setDefaultMode(uint8_t id) {
+void setDefaultMode() {
   uint8_t buff[4];
   buff[0] = 0;
   buff[1] = 0;
   buff[2] = 255;
   buff[3] = 3;
-  axWrite(id, 6, buff, 4);
+  axWrite(6, buff, 4);
 }
 
-void getPosition(uint8_t id) {
+void getPosition() {
   expected_answer_length = 8;
   answer_status = 0;
-  axRead(id, 36, 2);
+  axRead(36, 2);
 }
 
-void isMoving(uint8_t id) {
+void isMoving() {
   expected_answer_length = 7; 
-  axRead(id, 46, 1);
+  axRead(46, 1);
 }

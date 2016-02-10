@@ -3,6 +3,7 @@
 #include "interrupts.h"
 #include "power.h"
 #include "misc.h"
+#include "ax12-i2c.h"
 
 // initialize e-i2c and configure the handlers here
 void configureI2Cinterface() {
@@ -20,6 +21,7 @@ void configureI2Cinterface() {
     map8write(LEDSCO, clearOnlyLEDs);
     map8write(COLLMASK, setCollisionsMask);
     map8write(SENMASK, setSensorsMask);
+    map8write(SETACTIVE, setActiveId);
     
     //8 bit read commands
     map8read(INTERRUPT_STATUS, readStatus);
