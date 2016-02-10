@@ -8,6 +8,16 @@ typedef enum {
     DEFAULT_MODE,
     MOVING
 } AX12state;
+
+typedef enum {
+    NONE,
+    SET_WHEEL_MODE,
+    SET_DEFAULT_MODE,
+    SET_SPEED,
+    SET_POSITION,
+    SET_TORQUE
+} AX12order;
+
 /* called once on startup */
 void ax12Setup();
 
@@ -16,6 +26,7 @@ void ax12Manager();
 
 extern volatile uint8_t activeID;
 extern volatile AX12state state;
-extern volatile uint8_t command;
+extern volatile AX12order order;
+extern volatile int16_t position;
 
 #endif

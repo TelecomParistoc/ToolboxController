@@ -12,7 +12,7 @@
 
 typedef enum {
     AX12_FINISHED_MOVE = 0x01,
-    AX12_TORQUE_LIMIT = 0x02,
+    AX12_FORCING = 0x02,
     SENSOR_CHANGE = 0x04,
     COLLISION_CHANGE = 0x08
 } interrupt_source;

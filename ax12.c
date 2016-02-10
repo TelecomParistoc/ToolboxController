@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <xc.h>
+#include "interrupts.h"
 
 #define axid  129
 #define axid2 130
@@ -27,8 +28,9 @@
 
 volatile uint8_t activeID;
 volatile AX12state state;
-static uint16_t interrupt_answer;
-
+volatile AX12order order;
+volatile int16_t position;
+volatile int16_t parameter;
 
 // Initializes all Ax-12
 static void initAll();
@@ -73,8 +75,31 @@ void ax12Setup() {
 
 /* called in the main loop : performs all the needed updates */
 void ax12Manager() {
-    if(answer_status == 1)
+    if(order != NONE){
+        switch(order){
+            case SET_WHEEL_MODE:
+                setWheelMode();
+                break;
+            case SET_DEFAULT_MODE:
+                setDefaultMode();
+                break;
+            case SET_SPEED:
+                setSpeed(parameter);
+                break;
+            case SET_POSITION:
+                setPosition(parameter);
+                break;
+            case SET_TORQUE:
+                setMaxTorque(parameter);
+                break;
+        }
+        order = NONE;
+        return;
+    }
+    if(answer_status == 1){
         readBuffer();
+        answer_status = 0;
+    }
 }
 
 void axWrite(uint8_t reg, uint8_t * vals, uint8_t len) {
@@ -110,15 +135,18 @@ void axRead(uint8_t reg, uint8_t len) {
 }
 
 void readBuffer() {
-  for(uint8_t i = 0 ; i < 5 ; i ++)
+  for(uint8_t i = 0 ; i < 4 ; i ++)
       EUSART1_Read();
-  interrupt_answer = EUSART1_Read();
-  if (expected_answer_length == 8)
-      interrupt_answer += (EUSART1_Read() << 8); 
-  EUSART1_Read();
-  //TODO interrupter le Raspberry Pi
-  printf("On lit %d\n", interrupt_answer);
-  answer_status = 0;
+  if (EUSART1_Read() & 32 == 32)
+      raiseInterrupt(AX12_FORCING);
+  if (expected_answer_length == 8){
+      position = EUSART1_Read();  
+      position += (EUSART1_Read() << 8);
+  } else {
+      if(EUSART1_Read() == 1)
+          raiseInterrupt(AX12_FINISHED_MOVE);
+  }
+  printf("On lit %d\n", position);
 }
 
 void initAll() {
