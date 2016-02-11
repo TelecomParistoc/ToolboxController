@@ -227,11 +227,12 @@ void setDefaultMode() {
 
 void getPosition() {
     expected_answer_length = 8;
-    answer_status = 0;
+    answer_status = 1;
     axRead(36, 2);
 }
 
 void isMoving() {
     expected_answer_length = 7;
+    answer_status = 1;
     axRead(46, 1);
 }
