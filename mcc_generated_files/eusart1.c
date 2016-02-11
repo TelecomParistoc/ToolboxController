@@ -128,7 +128,7 @@ void EUSART1_Receive_ISR(void) {
     }
     eusart1RxCount++;
     if(eusart1RxCount == expected_answer_length){
-        answer_status = 1;
+        answer_status = 2;
     }
 }
 

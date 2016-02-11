@@ -6,8 +6,8 @@
 typedef enum {
     WHEEL_MODE,
     DEFAULT_MODE,
-    MOVING_POS,
-    MOVING_POLL
+    MOVING_ASK_POS,
+    MOVING_ASK_FINISHED,
 } AX12state;
 
 typedef enum {

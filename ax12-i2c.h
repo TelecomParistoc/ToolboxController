@@ -7,17 +7,19 @@
 extern "C" {
 #endif
 
-void masterSetActiveIdWheel(uint8_t id);
+    void masterSetActiveIdWheel(uint8_t id);
 
-void masterSetActiveIdDefault(uint8_t id);
+    void masterSetActiveIdDefault(uint8_t id);
 
-void masterSetSpeedWheel(int16_t param);
+    void masterSetSpeedWheel(int16_t param);
 
-void masterSetSpeedDefault(int16_t param);
+    void masterSetSpeedDefault(int16_t param);
 
-void masterSetPosition(int16_t param);
+    void masterSetPosition(int16_t param);
 
-void masterSetTorque(int16_t param);
+    void masterSetTorque(int16_t param);
+    
+    int16_t masterGetPosition();
 
 #ifdef	__cplusplus
 }

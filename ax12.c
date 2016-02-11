@@ -44,14 +44,14 @@ static void axRead(uint8_t reg, uint8_t len);
 // Reads the answer of the last axRead call
 static void readBuffer();
 
-// sets cons as goal position for Ax-12(id)
-static void setPosition(uint16_t cons);
+// sets parameter as goal position for Ax-12(id)
+static void setPosition();
 
-// sets cons as goal speed for Ax-12(id)
-static void setSpeed(uint16_t cons);
+// sets parameter as goal speed for Ax-12(id)
+static void setSpeed();
 
-// sets cons as max torque for Ax-12(id)
-static void setMaxTorque(uint16_t cons);
+// sets parameter as max torque for Ax-12(id)
+static void setMaxTorque();
 
 // puts Ax-12(id) in wheel mode
 static void setWheelMode();
@@ -70,134 +70,168 @@ void ax12Setup() {
     printf("Hello World !\n");
     activeID = 254;
     state = WHEEL_MODE;
+    order = NONE;
+    position = -1;
     initAll();
 }
 
 /* called in the main loop : performs all the needed updates */
 void ax12Manager() {
-    if(order != NONE){
-        switch(order){
+    if (answer_status == 1)
+        return;
+    if (answer_status == 2) {
+        readBuffer();
+        return;
+    }
+    if (order != NONE) {
+        switch (order) {
             case SET_SPEED_WHEEL:
+                setWheelMode();
+                setSpeed();
                 break;
             case SET_SPEED_DEFAULT:
+                setDefaultMode();
+                setSpeed();
                 break;
             case SET_POSITION:
+                setDefaultMode();
+                setPosition();
                 break;
             case SET_TORQUE:
+                setMaxTorque();
                 break;
         }
         order = NONE;
         return;
     }
-    if(answer_status == 1){
-        readBuffer();
-        answer_status = 0;
+    switch (state) {
+        case DEFAULT_MODE:
+            getPosition();
+            break;
+        case MOVING_ASK_POS:
+            getPosition();
+            break;
+        case MOVING_ASK_FINISHED:
+            isMoving();
+            break;
+        case WHEEL_MODE:
+            break;
     }
 }
 
 void axWrite(uint8_t reg, uint8_t * vals, uint8_t len) {
-  uint8_t buff[20];
-  buff[0] = 0xFF;
-  buff[1] = 0xFF;
-  buff[2] = activeID;
-  buff[3] = len + 3;
-  buff[4] = 0x03;
-  buff[5] = reg;
-  uint8_t checksum = 0;
-  for(uint8_t i = 0 ; i < len ; i ++){
-      buff[6 + i] = vals[i];
-      checksum += vals[i];
-  }
-  checksum += len + 6 + activeID + reg;
-  buff[6 + len] = 255 - checksum;
-  serial1Write(buff, 7 + len);
+    uint8_t buff[20];
+    buff[0] = 0xFF;
+    buff[1] = 0xFF;
+    buff[2] = activeID;
+    buff[3] = len + 3;
+    buff[4] = 0x03;
+    buff[5] = reg;
+    uint8_t checksum = 0;
+    for (uint8_t i = 0; i < len; i++) {
+        buff[6 + i] = vals[i];
+        checksum += vals[i];
+    }
+    checksum += len + 6 + activeID + reg;
+    buff[6 + len] = 255 - checksum;
+    serial1Write(buff, 7 + len);
 }
 
 void axRead(uint8_t reg, uint8_t len) {
-  uint8_t buff[8];
-  buff[0] = 0xFF;
-  buff[1] = 0xFF;
-  buff[2] = activeID;
-  buff[3] = 0x04;
-  buff[4] = 0x02;
-  buff[5] = reg;
-  buff[6] = len;
-  uint8_t checksum = 6 + activeID + reg + len;
-  buff[7] = 255 - checksum;
-  serial1Write(buff, 8);
+    uint8_t buff[8];
+    buff[0] = 0xFF;
+    buff[1] = 0xFF;
+    buff[2] = activeID;
+    buff[3] = 0x04;
+    buff[4] = 0x02;
+    buff[5] = reg;
+    buff[6] = len;
+    uint8_t checksum = 6 + activeID + reg + len;
+    buff[7] = 255 - checksum;
+    serial1Write(buff, 8);
 }
 
 void readBuffer() {
-  for(uint8_t i = 0 ; i < 4 ; i ++)
-      EUSART1_Read();
-  if (EUSART1_Read() & 32 == 32)
-      raiseInterrupt(AX12_FORCING);
-  if (expected_answer_length == 8){
-      position = EUSART1_Read();  
-      position += (EUSART1_Read() << 8);
-  } else {
-      if(EUSART1_Read() == 1)
-          raiseInterrupt(AX12_FINISHED_MOVE);
-  }
-  printf("On lit %d\n", position);
+    for (uint8_t i = 0; i < 4; i++)
+        EUSART1_Read();
+    if (EUSART1_Read() & 32 == 32)
+        raiseInterrupt(AX12_FORCING);
+    if (expected_answer_length == 8) {
+        position = EUSART1_Read();
+        position += (EUSART1_Read() << 8);
+        if (state != DEFAULT_MODE)
+            state = MOVING_ASK_FINISHED;
+    } else {
+        if (EUSART1_Read() == 1) {
+            raiseInterrupt(AX12_FINISHED_MOVE);
+            state = DEFAULT_MODE;
+            return;
+        }
+        state = MOVING_ASK_POS;
+    }
+    answer_status = 0;
+    printf("On lit %d\n", position);
 }
 
 void initAll() {
-  uint8_t buff[2];
-  buff[0] = 255;
-  buff[1] = 3;
-  axWrite(34, buff, 2);
-  buff[0] = 1;
-  axWrite(24, buff, 1); // Enable torque
-  axWrite(16, buff, 1); // Status return only if READ
-  buff[0] = 2;
-  axWrite(18, buff, 1); // Shutdown ssi surchauffe
+    uint8_t buff[2];
+    buff[0] = 255;
+    buff[1] = 3;
+    axWrite(34, buff, 2);
+    buff[0] = 1;
+    axWrite(24, buff, 1); // Enable torque
+    axWrite(16, buff, 1); // Status return only if READ
+    buff[0] = 2;
+    axWrite(18, buff, 1); // Shutdown ssi surchauffe
 }
 
-void setPosition(uint16_t cons) {
-  uint8_t buff[2];
-  buff[0] = (uint8_t) cons;
-  buff[1] = cons >> 8;
-  axWrite(30, buff, 2);
+void setPosition() {
+    state = MOVING_ASK_FINISHED;
+    uint8_t buff[2];
+    buff[0] = (uint8_t) parameter;
+    buff[1] = parameter >> 8;
+    axWrite(30, buff, 2);
 }
 
-void setSpeed(uint16_t cons) {
-  uint8_t buff[2];
-  buff[0] = (uint8_t) cons;
-  buff[1] = cons >> 8;
-  axWrite(32, buff, 2);
+void setSpeed() {
+    uint8_t buff[2];
+    buff[0] = (uint8_t) parameter;
+    buff[1] = parameter >> 8;
+    axWrite(32, buff, 2);
 }
 
-void setMaxTorque(uint16_t cons) {
-  uint8_t buff[2];
-  buff[0] = (uint8_t) cons;
-  buff[1] = cons >> 8;
-  axWrite(34, buff, 2);
+void setMaxTorque() {
+    uint8_t buff[2];
+    buff[0] = (uint8_t) parameter;
+    buff[1] = parameter >> 8;
+    axWrite(34, buff, 2);
 }
 
 void setWheelMode() {
-  uint8_t buff[4];
-  for(int i = 0 ; i < 4 ; i ++)
-      buff[i] = 0;
-  axWrite(6, buff, 4);
+    state = WHEEL_MODE;
+    uint8_t buff[4];
+    for (int i = 0; i < 4; i++)
+        buff[i] = 0;
+    axWrite(6, buff, 4);
 }
 
 void setDefaultMode() {
-  uint8_t buff[4];
-  buff[0] = 0;
-  buff[1] = 0;
-  buff[2] = 255;
-  buff[3] = 3;
-  axWrite(6, buff, 4);
+    state = DEFAULT_MODE;
+    uint8_t buff[4];
+    buff[0] = 0;
+    buff[1] = 0;
+    buff[2] = 255;
+    buff[3] = 3;
+    axWrite(6, buff, 4);
 }
 
 void getPosition() {
-  expected_answer_length = 8;
-  answer_status = 0;
-  axRead(36, 2);
+    expected_answer_length = 8;
+    answer_status = 0;
+    axRead(36, 2);
 }
 
 void isMoving() {
-  expected_answer_length = 7; 
-  axRead(46, 1);
+    expected_answer_length = 7;
+    axRead(46, 1);
 }

@@ -6,11 +6,12 @@
 #include "ax12-i2c.h"
 
 // initialize e-i2c and configure the handlers here
+
 void configureI2Cinterface() {
     ei2cInit(); // initialize e-I2C library
-    
+
     // simple write commands
-    
+
     //8 bit write commands
     map8write(PWM1, setPWM1);
     map8write(PWM2, setPWM2);
@@ -23,7 +24,7 @@ void configureI2Cinterface() {
     map8write(SENMASK, setSensorsMask);
     map8write(SETACTIVEWHEEL, masterSetActiveIdWheel);
     map8write(SETACTIVEDEFAULT, masterSetActiveIdDefault);
-    
+
     //8 bit read commands
     map8read(INTERRUPT_STATUS, readStatus);
     map8read(MOTOR_POWER_LEVEL, getMotorPowerLevel);
@@ -31,12 +32,14 @@ void configureI2Cinterface() {
     map8read(BUTTONS, getButtons);
     map8read(SENSORS, getSensors);
     map8read(COLLISIONS, getCollisions);
-    
+
     // 16 bit write commands
     map16write(SETSPEEDWHEEL, masterSetSpeedWheel);
     map16write(SETSPEEDDEFAULT, masterSetSpeedDefault);
     map16write(SETPOSITION, masterSetPosition);
     map16write(SETTORQUE, masterSetTorque);
+
     //16 bit read commands
+    map16read(GETPOSITION, masterGetPosition);
 
 }
