@@ -11,9 +11,7 @@ extern "C" {
 
     void masterSetActiveIdDefault(uint8_t id);
 
-    void masterSetSpeedWheel(int16_t param);
-
-    void masterSetSpeedDefault(int16_t param);
+    void masterSetSpeed(int16_t param);
 
     void masterSetPosition(int16_t param);
 

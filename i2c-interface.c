@@ -34,8 +34,7 @@ void configureI2Cinterface() {
     map8read(COLLISIONS, getCollisions);
 
     // 16 bit write commands
-    map16write(SETSPEEDWHEEL, masterSetSpeedWheel);
-    map16write(SETSPEEDDEFAULT, masterSetSpeedDefault);
+    map16write(SETSPEED, masterSetSpeed);
     map16write(SETPOSITION, masterSetPosition);
     map16write(SETTORQUE, masterSetTorque);
 

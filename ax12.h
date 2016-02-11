@@ -12,8 +12,8 @@ typedef enum {
 
 typedef enum {
     NONE,
-    SET_SPEED_WHEEL,
-    SET_SPEED_DEFAULT,
+    SET_MODE,
+    SET_SPEED,
     SET_POSITION,
     SET_TORQUE
 } AX12order;

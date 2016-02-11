@@ -85,16 +85,18 @@ void ax12Manager() {
     }
     if (order != NONE) {
         switch (order) {
-            case SET_SPEED_WHEEL:
-                setWheelMode();
-                setSpeed();
+            case SET_MODE:
+                if(state = DEFAULT_MODE){
+                    setDefaultMode();
+                    getPosition();
+                } else {
+                    setWheelMode();
+                }
                 break;
-            case SET_SPEED_DEFAULT:
-                setDefaultMode();
+            case SET_SPEED:
                 setSpeed();
                 break;
             case SET_POSITION:
-                setDefaultMode();
                 setPosition();
                 break;
             case SET_TORQUE:

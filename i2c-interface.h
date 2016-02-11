@@ -36,14 +36,13 @@
 
 /***************     16-bit GET/SET COMMANDS     ***************/
 // (int16 arguments) : have to be mapped between 0x80 and 0xFF
-#define NUM_W16_CMD 5 // total number of SET commands, at least 1
+#define NUM_W16_CMD 4 // total number of SET commands, at least 1
 #define NUM_R16_CMD 2 // total number of GET commands, at least 1
 // the higher command should be lower than 0x80 + NUM_W16_CMD
 
-#define SETSPEEDWHEEL 0x81
-#define SETSPEEDDEFAULT 0x82
-#define SETPOSITION 0x83
-#define SETTORQUE 0x84
+#define SETSPEED 0x81
+#define SETPOSITION 0x82
+#define SETTORQUE 0x83
 
 #define GETPOSITION 0x81
 

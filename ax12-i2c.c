@@ -6,23 +6,19 @@ static void setCommand(AX12order consign, int16_t param);
 void masterSetActiveIdWheel(uint8_t id) {
     activeID = id;
     position = -1;
-    order = NONE;
     state = WHEEL_MODE;
+    setCommand(SET_MODE, 0);
 }
 
 void masterSetActiveIdDefault(uint8_t id) {
     activeID = id;
     position = -1;
-    order = NONE;
     state = DEFAULT_MODE;
+    setCommand(SET_MODE, 0);
 }
 
-void masterSetSpeedWheel(int16_t param) {
-    setCommand(SET_SPEED_WHEEL, param);
-}
-
-void masterSetSpeedDefault(int16_t param) {
-    setCommand(SET_SPEED_DEFAULT, param);
+void masterSetSpeed(int16_t param) {
+    setCommand(SET_SPEED, param);
 }
 
 void masterSetPosition(int16_t param) {
