@@ -12,8 +12,8 @@
 #define LOGIC_LOW_BAT 153
 #define LOGIC_MIDDLE_BAT 185
 
-#define MOTOR_LOW_BAT 88
-#define MOTOR_MIDDLE_BAT 53
+#define MOTOR_LOW_BAT 73
+#define MOTOR_MIDDLE_BAT 41
 
 // battery voltage = (logicPowerLevel*2 + 448)*0.0139 (in volts)
 uint8_t logicPowerLevel = 0;
