@@ -24,10 +24,10 @@ void setLEDs(int8_t leds);
 void setOnlyLEDs(int8_t leds);
 void clearOnlyLEDs(int8_t leds);
 
-void setPWM1(int8_t value);
-void setPWM2(int8_t value);
-void setPWM3(int8_t value);
-void setPWM4(int8_t value);
+void setPWM1(uint8_t value);
+void setPWM2(uint8_t value);
+void setPWM3(uint8_t value);
+void setPWM4(uint8_t value);
 
 #endif	/* MISC_H */
 

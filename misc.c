@@ -30,9 +30,18 @@ static inline int8_t getColls() {
 }
 // we can't use getSensors since it's used in interrupts
 static inline int8_t getSens() {
-    uint8_t result = (PORTB&0xF0) >> 3 + PORTB&0x01;
-    result = result & sensorsMask;
-    return result;
+    int8_t result = 0;
+    if(SEN1_GetValue())
+        result = 0x01;
+    if(SEN2_GetValue())
+        result += 0x02;
+    if(SEN3_GetValue())
+        result += 0x04;
+    if(SEN4_GetValue())
+        result += 0x08;
+    if(SEN5_GetValue())
+        result += 0x10;
+    return result & sensorsMask;
 }
 
 inline void sensorManager() {
@@ -61,7 +70,17 @@ int8_t getButtons() {
     return result;
 }
 int8_t getSensors() {
-    uint8_t result = (PORTB&0xF0) >> 3 + PORTB&0x01;
+    int8_t result = 0;
+    if(SEN1_GetValue())
+        result = 0x01;
+    if(SEN2_GetValue())
+        result += 0x02;
+    if(SEN3_GetValue())
+        result += 0x04;
+    if(SEN4_GetValue())
+        result += 0x08;
+    if(SEN5_GetValue())
+        result += 0x10;
     return result;
 }
 int8_t getCollisions() {
@@ -126,15 +145,19 @@ void clearOnlyLEDs(int8_t leds) {
     if(leds&0x08)
         LED4_SetLow();
 }
-void setPWM1(int8_t value) {
-    EPWM3_LoadDutyValue(value);
+void setPWM1(uint8_t value) {
+    uint16_t dc = value << 1;
+    EPWM3_LoadDutyValue(dc);
 }
-void setPWM2(int8_t value) {
-    EPWM2_LoadDutyValue(value);
+void setPWM2(uint8_t value) {
+    uint16_t dc = value << 1;
+    EPWM2_LoadDutyValue(dc);
 }
-void setPWM3(int8_t value) {
-    EPWM1_LoadDutyValue(value);
+void setPWM3(uint8_t value) {
+    uint16_t dc = value << 1;
+    EPWM1_LoadDutyValue(dc);
 }
-void setPWM4(int8_t value) {
-    PWM4_LoadDutyValue(value);
+void setPWM4(uint8_t value) {
+    uint16_t dc = value << 1;
+    PWM4_LoadDutyValue(dc);
 }
