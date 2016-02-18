@@ -86,7 +86,7 @@ void ax12Manager() {
     if (order != NONE) {
         switch (order) {
             case SET_MODE:
-                if(state = DEFAULT_MODE){
+                if(state == DEFAULT_MODE){
                     setDefaultMode();
                     getPosition();
                 } else {
@@ -98,6 +98,7 @@ void ax12Manager() {
                 break;
             case SET_POSITION:
                 setPosition();
+                printf("Set position\n");
                 break;
             case SET_TORQUE:
                 setMaxTorque();
@@ -111,9 +112,11 @@ void ax12Manager() {
             getPosition();
             break;
         case MOVING_ASK_POS:
+            printf("Get pos\n");
             getPosition();
             break;
         case MOVING_ASK_FINISHED:
+            printf("Is moving\n");
             isMoving();
             break;
         case WHEEL_MODE:
@@ -161,19 +164,22 @@ void readBuffer() {
     if (expected_answer_length == 8) {
         position = EUSART1_Read();
         position += (EUSART1_Read() << 8);
+        //printf("On lit %d\n", position);
         if (state != DEFAULT_MODE)
             state = MOVING_ASK_FINISHED;
     } else {
         if (EUSART1_Read() == 1) {
             raiseInterrupt(AX12_FINISHED_MOVE);
+            printf("Finished move\n");
             state = DEFAULT_MODE;
+            answer_status = 0;
+            EUSART1_Read();
             return;
         }
         state = MOVING_ASK_POS;
     }
     EUSART1_Read();
     answer_status = 0;
-    //printf("On lit %d\n", position);
 }
 
 void initAll() {
