@@ -171,8 +171,9 @@ void readBuffer() {
         }
         state = MOVING_ASK_POS;
     }
+    EUSART1_Read();
     answer_status = 0;
-    printf("On lit %d\n", position);
+    //printf("On lit %d\n", position);
 }
 
 void initAll() {

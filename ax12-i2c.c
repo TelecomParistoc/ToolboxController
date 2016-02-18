@@ -1,5 +1,6 @@
 #include "ax12-i2c.h"
 #include "ax12.h"
+#include <stdio.h>
 
 static void setCommand(AX12order consign, int16_t param);
 
