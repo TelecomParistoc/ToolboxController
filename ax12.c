@@ -31,6 +31,7 @@ volatile AX12state state;
 volatile AX12order order;
 volatile int16_t position;
 volatile int16_t parameter;
+volatile uint8_t forcing;
 
 // Initializes all Ax-12
 static void initAll();
@@ -72,6 +73,7 @@ void ax12Setup() {
     state = WHEEL_MODE;
     order = NONE;
     position = -1;
+    forcing = 0;
     initAll();
 }
 
@@ -160,7 +162,10 @@ void readBuffer() {
     for (uint8_t i = 0; i < 4; i++)
         EUSART1_Read();
     if (EUSART1_Read() & 32 == 32)
-        raiseInterrupt(AX12_FORCING);
+        if (! forcing){
+            raiseInterrupt(AX12_FORCING);
+            forcing = 1;
+        }
     if (expected_answer_length == 8) {
         position = EUSART1_Read();
         position += (EUSART1_Read() << 8);
@@ -195,6 +200,7 @@ void initAll() {
 }
 
 void setPosition() {
+    forcing = 0;
     state = MOVING_ASK_FINISHED;
     uint8_t buff[2];
     buff[0] = (uint8_t) parameter;

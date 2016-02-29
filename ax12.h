@@ -29,5 +29,6 @@ extern volatile AX12state state;
 extern volatile AX12order order;
 extern volatile int16_t position;
 extern volatile int16_t parameter;
+extern volatile uint8_t forcing;
 
 #endif

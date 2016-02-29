@@ -7,6 +7,7 @@ static void setCommand(AX12order consign, int16_t param);
 void masterSetActiveIdWheel(uint8_t id) {
     activeID = id;
     position = -1;
+    forcing = 0;
     state = WHEEL_MODE;
     setCommand(SET_MODE, 0);
 }
@@ -14,6 +15,7 @@ void masterSetActiveIdWheel(uint8_t id) {
 void masterSetActiveIdDefault(uint8_t id) {
     activeID = id;
     position = -1;
+    forcing = 0;
     state = DEFAULT_MODE;
     setCommand(SET_MODE, 0);
 }
