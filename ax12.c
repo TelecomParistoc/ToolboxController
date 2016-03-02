@@ -100,7 +100,6 @@ void ax12Manager() {
                 break;
             case SET_POSITION:
                 setPosition();
-                printf("Set position\n");
                 break;
             case SET_TORQUE:
                 setMaxTorque();
