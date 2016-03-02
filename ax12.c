@@ -173,7 +173,7 @@ void readBuffer() {
         if (state != DEFAULT_MODE)
             state = MOVING_ASK_FINISHED;
     } else {
-        if (EUSART1_Read() == 1) {
+        if (EUSART1_Read() == 0) {
             raiseInterrupt(AX12_FINISHED_MOVE);
             printf("Finished move\n");
             state = DEFAULT_MODE;
