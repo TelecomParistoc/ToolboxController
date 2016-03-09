@@ -32,6 +32,10 @@ void masterSetTorque(int16_t param) {
     setCommand(SET_TORQUE, param);
 }
 
+void masterReset() {
+    setCommand(RESET, 0);
+}
+
 int16_t masterGetPosition() {
     return position;
 }

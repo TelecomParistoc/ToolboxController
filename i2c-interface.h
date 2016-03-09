@@ -9,9 +9,10 @@
 // the higher command should be lower than 0x00 + NUM_W0_CMD
 
 
+
 /***************     8-bit GET/SET COMMANDS     ***************/
 // (int8 arguments) : have to be mapped between 0x40 and 0x7F
-#define NUM_W8_CMD 12 // total number of SET commands, at least 1
+#define NUM_W8_CMD 13 // total number of SET commands, at least 1
 #define NUM_R8_CMD 6 // total number of GET commands, at least 1
 // the higher command should be lower than 0x40 + NUM_x8_CMD
 
@@ -26,6 +27,7 @@
 #define SENMASK 0x49
 #define SETACTIVEWHEEL 0x4A
 #define SETACTIVEDEFAULT 0x4B
+#define AXRESET 0x4C
 
 #define INTERRUPT_STATUS 0x40
 #define MOTOR_POWER_LEVEL 0x41

@@ -86,9 +86,7 @@ void ax12Manager() {
         return;
     }
     if (order != NONE) {
-        AX12order orderCurrent = order;
-        order = NONE;
-        switch (orderCurrent) {
+        switch (order) {
             case SET_MODE:
                 if(state == DEFAULT_MODE){
                     setDefaultMode();
@@ -109,7 +107,11 @@ void ax12Manager() {
                 setMaxTorque();
                 printf("Set torque\n");
                 break;
+            case RESET:
+                ax12Setup();
+                break;
         }
+        order = NONE;
         return;
     }
     switch (state) {
@@ -188,14 +190,16 @@ void readBuffer() {
 
 void initAll() {
     uint8_t buff[2];
+    buff[0] = 1;
+    axWrite(24, buff, 1); // Disable torque
     buff[0] = 255;
     buff[1] = 3;
-    axWrite(34, buff, 2);
-    buff[0] = 1;
-    axWrite(24, buff, 1); // Enable torque
-    axWrite(16, buff, 1); // Status return only if READ
+    axWrite(34, buff, 2); // Sets Max Torque to maximum value
     buff[0] = 2;
     axWrite(18, buff, 1); // Shutdown ssi surchauffe
+    buff[0] = 1;
+    axWrite(16, buff, 1); // Status return only if READ
+    axWrite(24, buff, 1); // Enable torque
 }
 
 void setPosition() {

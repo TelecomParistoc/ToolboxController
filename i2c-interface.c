@@ -24,6 +24,7 @@ void configureI2Cinterface() {
     map8write(SENMASK, setSensorsMask);
     map8write(SETACTIVEWHEEL, masterSetActiveIdWheel);
     map8write(SETACTIVEDEFAULT, masterSetActiveIdDefault);
+    map8write(AXRESET, masterReset);
 
     //8 bit read commands
     map8read(INTERRUPT_STATUS, readStatus);

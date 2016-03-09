@@ -17,6 +17,8 @@ extern "C" {
 
     void masterSetTorque(int16_t param);
     
+    void masterReset();
+    
     int16_t masterGetPosition();
 
 #ifdef	__cplusplus

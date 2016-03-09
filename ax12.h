@@ -15,7 +15,8 @@ typedef enum {
     SET_MODE,
     SET_SPEED,
     SET_POSITION,
-    SET_TORQUE
+    SET_TORQUE,
+    RESET
 } AX12order;
 
 /* called once on startup */
