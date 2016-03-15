@@ -14,6 +14,7 @@ void masterSetActiveIdWheel(uint8_t id) {
 
 void masterSetActiveIdDefault(uint8_t id) {
     activeID = id;
+    printf("Active id is %d\n", activeID);
     position = -1;
     forcing = 0;
     state = DEFAULT_MODE;

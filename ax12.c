@@ -66,6 +66,8 @@ static void getPosition();
 // checks if Ax-12 is moving
 static void isMoving();
 
+static int debug;
+
 /* called once on startup */
 void ax12Setup() {
     printf("Hello World !\n");
@@ -74,6 +76,7 @@ void ax12Setup() {
     order = NONE;
     position = -1;
     forcing = 0;
+    answer_status = 0;
     initAll();
 }
 
@@ -88,6 +91,7 @@ void ax12Manager() {
     if (order != NONE) {
         switch (order) {
             case SET_MODE:
+                printf("Mode set\n");
                 if(state == DEFAULT_MODE){
                     setDefaultMode();
                     getPosition();
@@ -108,6 +112,7 @@ void ax12Manager() {
                 printf("Set torque\n");
                 break;
             case RESET:
+                debug = 1;
                 ax12Setup();
                 break;
         }
