@@ -91,7 +91,7 @@ void ax12Manager() {
     if (order != NONE) {
         switch (order) {
             case SET_MODE:
-                printf("Mode set\n");
+                printf("Mode set for %d\n", activeID);
                 if(state == DEFAULT_MODE){
                     setDefaultMode();
                     getPosition();
@@ -101,15 +101,15 @@ void ax12Manager() {
                 break;
             case SET_SPEED:
                 setSpeed();
-                printf("Set speed\n");
+                printf("Set speed %d\n", parameter);
                 break;
             case SET_POSITION:
                 setPosition();
-                printf("Set position\n");
+                printf("Set position %d\n", parameter);
                 break;
             case SET_TORQUE:
                 setMaxTorque();
-                printf("Set torque\n");
+                printf("Set torque %d\n", parameter);
                 break;
             case RESET:
                 debug = 1;

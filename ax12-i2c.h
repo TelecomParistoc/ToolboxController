@@ -7,9 +7,9 @@
 extern "C" {
 #endif
 
-    void masterSetActiveIdWheel(uint8_t id);
+    void masterSetActiveIdWheel(int16_t id);
 
-    void masterSetActiveIdDefault(uint8_t id);
+    void masterSetActiveIdDefault(int16_t id);
 
     void masterSetSpeed(int16_t param);
 

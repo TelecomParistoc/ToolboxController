@@ -4,7 +4,7 @@
 
 static void setCommand(AX12order consign, int16_t param);
 
-void masterSetActiveIdWheel(uint8_t id) {
+void masterSetActiveIdWheel(int16_t id) {
     activeID = id;
     position = -1;
     forcing = 0;
@@ -12,9 +12,8 @@ void masterSetActiveIdWheel(uint8_t id) {
     setCommand(SET_MODE, 0);
 }
 
-void masterSetActiveIdDefault(uint8_t id) {
+void masterSetActiveIdDefault(int16_t id) {
     activeID = id;
-    printf("Active id is %d\n", activeID);
     position = -1;
     forcing = 0;
     state = DEFAULT_MODE;

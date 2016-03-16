@@ -110,7 +110,7 @@ void callHandler() {
         case W8:
             cmd = cmd & 0x3F;
             if(cmd < NUM_W8_CMD && w8cmds[cmd] != NULL) { // if the command is valid
-                w8cmds[cmd](currentMsg.arg.lbyte);
+                w8cmds[cmd](currentMsg.arg.lbyte);                
             }
             break;
         case W0:
