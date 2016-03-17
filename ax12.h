@@ -19,17 +19,25 @@ typedef enum {
     RESET
 } AX12order;
 
+typedef struct {
+    AX12order order;
+    int16_t   param;
+} consign;
+
+typedef struct {
+    consign orders[10];
+    int begin;
+    int end;
+} consign_buffer;
+
 /* called once on startup */
 void ax12Setup();
 
 /* called in the main loop : performs all the needed updates */
 void ax12Manager();
 
-extern volatile uint8_t activeID;
-extern volatile AX12state state;
-extern volatile AX12order order;
+extern volatile consign_buffer consigns;
 extern volatile int16_t position;
-extern volatile int16_t parameter;
 extern volatile uint8_t forcing;
 
 #endif

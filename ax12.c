@@ -28,7 +28,7 @@
 
 volatile uint8_t activeID;
 volatile AX12state state;
-volatile AX12order order;
+volatile consign_buffer consigns;
 volatile int16_t position;
 volatile int16_t parameter;
 volatile uint8_t forcing;
@@ -73,7 +73,8 @@ void ax12Setup() {
     printf("Hello World !\n");
     activeID = 254;
     state = WHEEL_MODE;
-    order = NONE;
+    consigns.begin = 0;
+    consigns.end = 0;
     position = -1;
     forcing = 0;
     answer_status = 0;
@@ -88,36 +89,44 @@ void ax12Manager() {
         readBuffer();
         return;
     }
-    if (order != NONE) {
-        switch (order) {
+    if (consigns.begin != consigns.end) {
+        int current = (consigns.begin + 1) % 10;
+        switch (consigns.orders[current].order) {
             case SET_MODE:
-                printf("Mode set for %d\n", activeID);
-                if(state == DEFAULT_MODE){
+                position = -1;
+                if(consigns.orders[current].param < 1000){
+                    activeID = consigns.orders[current].param;
+                    state = DEFAULT_MODE;
                     setDefaultMode();
                     getPosition();
                 } else {
+                    activeID = consigns.orders[current].param - 1000;
+                    state = WHEEL_MODE;
                     setWheelMode();
                 }
+                printf("Mode set for %d\n", activeID);
                 break;
             case SET_SPEED:
                 setSpeed();
+                parameter = consigns.orders[current].param;
                 printf("Set speed %d\n", parameter);
                 break;
             case SET_POSITION:
                 setPosition();
+                parameter = consigns.orders[current].param;
                 printf("Set position %d\n", parameter);
                 break;
             case SET_TORQUE:
                 setMaxTorque();
+                parameter = consigns.orders[current].param;
                 printf("Set torque %d\n", parameter);
                 break;
             case RESET:
-                debug = 1;
                 ax12Setup();
                 printf("Reset ax-12\n");
                 break;
         }
-        order = NONE;
+        consigns.begin = current;
         return;
     }
     switch (state) {
@@ -181,7 +190,8 @@ void readBuffer() {
         if (state != DEFAULT_MODE)
             state = MOVING_ASK_FINISHED;
     } else {
-        if (EUSART1_Read() == 0) {
+        int foo = EUSART1_Read();
+        if (foo == 0) {
             raiseInterrupt(AX12_FINISHED_MOVE);
             state = DEFAULT_MODE;
             answer_status = 0;

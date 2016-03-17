@@ -2,22 +2,16 @@
 #include "ax12.h"
 #include <stdio.h>
 
-static void setCommand(AX12order consign, int16_t param);
+extern volatile consign_buffer consigns;
+
+static void setCommand(AX12order axorder, int16_t param);
 
 void masterSetActiveIdWheel(int16_t id) {
-    activeID = id;
-    position = -1;
-    forcing = 0;
-    state = WHEEL_MODE;
-    setCommand(SET_MODE, 0);
+    setCommand(SET_MODE, id + 1000);
 }
 
 void masterSetActiveIdDefault(int16_t id) {
-    activeID = id;
-    position = -1;
-    forcing = 0;
-    state = DEFAULT_MODE;
-    setCommand(SET_MODE, 0);
+    setCommand(SET_MODE, id);
 }
 
 void masterSetSpeed(int16_t param) {
@@ -40,7 +34,9 @@ int16_t masterGetPosition() {
     return position;
 }
 
-static void setCommand(AX12order consign, int16_t param) {
-    order = consign;
-    parameter = param;
+static void setCommand(AX12order axorder, int16_t param) {
+    int next = (consigns.end + 1) % 10;
+    consigns.orders[next].order = axorder;
+    consigns.orders[next].param = param;
+    consigns.end = next;
 }
