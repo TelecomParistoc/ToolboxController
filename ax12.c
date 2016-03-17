@@ -114,6 +114,7 @@ void ax12Manager() {
             case RESET:
                 debug = 1;
                 ax12Setup();
+                printf("Reset ax-12\n");
                 break;
         }
         order = NONE;
