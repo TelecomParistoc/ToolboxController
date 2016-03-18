@@ -107,18 +107,18 @@ void ax12Manager() {
                 printf("Mode set for %d\n", activeID);
                 break;
             case SET_SPEED:
-                setSpeed();
                 parameter = consigns.orders[current].param;
+                setSpeed();
                 printf("Set speed %d\n", parameter);
                 break;
             case SET_POSITION:
-                setPosition();
                 parameter = consigns.orders[current].param;
+                setPosition();
                 printf("Set position %d\n", parameter);
                 break;
             case SET_TORQUE:
-                setMaxTorque();
                 parameter = consigns.orders[current].param;
+                setMaxTorque();
                 printf("Set torque %d\n", parameter);
                 break;
             case RESET:
