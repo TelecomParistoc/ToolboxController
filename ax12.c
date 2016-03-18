@@ -71,13 +71,8 @@ static int debug;
 /* called once on startup */
 void ax12Setup() {
     printf("Hello World !\n");
-    activeID = 254;
-    state = WHEEL_MODE;
     consigns.begin = 0;
     consigns.end = 0;
-    position = -1;
-    forcing = 0;
-    answer_status = 0;
     initAll();
 }
 
@@ -122,7 +117,7 @@ void ax12Manager() {
                 printf("Set torque %d\n", parameter);
                 break;
             case RESET:
-                ax12Setup();
+                initAll();
                 printf("Reset ax-12\n");
                 break;
         }
@@ -205,6 +200,11 @@ void readBuffer() {
 }
 
 void initAll() {
+    activeID = 254;
+    state = WHEEL_MODE;
+    position = -1;
+    forcing = 0;
+    answer_status = 0;
     uint8_t buff[2];
     buff[0] = 1;
     axWrite(24, buff, 1); // Disable torque
