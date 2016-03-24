@@ -33,6 +33,9 @@ volatile int16_t position;
 volatile int16_t parameter;
 volatile uint8_t forcing;
 
+uint16_t count;
+uint16_t max;
+
 // Initializes all Ax-12
 static void initAll();
 
@@ -73,13 +76,21 @@ void ax12Setup() {
     printf("Hello World !\n");
     consigns.begin = 0;
     consigns.end = 0;
+    max = 0;
     initAll();
 }
 
 /* called in the main loop : performs all the needed updates */
 void ax12Manager() {
-    if (answer_status == 1)
+    if (answer_status == 1) {
+        count ++;
+        if(count == 1500){
+            count = 0;
+            answer_status = 0;
+            printf("Ax-12 %d timeout\n", activeID);
+        }
         return;
+    }
     if (answer_status == 2) {
         readBuffer();
         return;
@@ -205,6 +216,7 @@ void initAll() {
     position = -1;
     forcing = 0;
     answer_status = 0;
+    count = 0;
     uint8_t buff[2];
     buff[0] = 1;
     axWrite(24, buff, 1); // Disable torque
@@ -261,12 +273,14 @@ void setDefaultMode() {
 
 void getPosition() {
     expected_answer_length = 8;
+    count = 0;
     answer_status = 1;
     axRead(36, 2);
 }
 
 void isMoving() {
     expected_answer_length = 7;
+    count = 0;
     answer_status = 1;
     axRead(46, 1);
 }
