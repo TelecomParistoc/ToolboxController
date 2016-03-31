@@ -33,8 +33,10 @@ volatile int16_t position;
 volatile int16_t parameter;
 volatile uint8_t forcing;
 
-uint16_t count;
-uint16_t max;
+static uint16_t count;
+//static uint16_t max;
+
+static int spam;
 
 // Initializes all Ax-12
 static void initAll();
@@ -76,7 +78,7 @@ void ax12Setup() {
     printf("Hello World !\n");
     consigns.begin = 0;
     consigns.end = 0;
-    max = 0;
+    spam = 0;
     initAll();
 }
 
@@ -88,10 +90,15 @@ void ax12Manager() {
             count = 0;
             answer_status = 0;
             printf("Ax-12 %d timeout\n", activeID);
+            clearBuffer();
         }
         return;
     }
     if (answer_status == 2) {
+        //if(count > max){
+        //    max = count;
+        //    printf("Count : %d\n", count);
+        //}
         readBuffer();
         return;
     }
@@ -132,7 +139,13 @@ void ax12Manager() {
                 printf("Reset ax-12\n");
                 break;
         }
-        consigns.begin = current;
+        if (spam){
+            consigns.begin = current;
+            spam = 0;
+        }
+        else{
+            spam = 1;
+        }
         return;
     }
     switch (state) {

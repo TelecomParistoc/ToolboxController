@@ -173,9 +173,10 @@ extern "C" {
 
       @Returns
         None
-     */
+     */ 
     void EUSART1_Receive_ISR(void);
-
+    
+    void clearBuffer();
     void serial1Write(uint8_t * buf, uint8_t size);
 
 #ifdef __cplusplus  // Provide C++ Compatibility

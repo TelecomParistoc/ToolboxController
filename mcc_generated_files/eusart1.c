@@ -132,6 +132,11 @@ void EUSART1_Receive_ISR(void) {
     }
 }
 
+void clearBuffer() {
+    while(eusart1RxCount)
+        EUSART1_Read();
+}
+
 void serial1Write(uint8_t * buf, uint8_t size){
     for(uint8_t i = 0 ; i < size ; i++)
         EUSART1_Write(buf[i]);
