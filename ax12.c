@@ -163,6 +163,28 @@ void ax12Manager() {
     }
 }
 
+/*
+ * Allows you to send data to an AX12
+ * 
+ * A message has the following format : 
+ * 	0xFF 0xFF ID LENGTH INSTRUCTION PARAM_1 ... PARAM_N CHECK_SUM
+ * Explanation of the message format :
+ * 		-0xFF 0xFF : indicates the start of an incoming packet.
+ * 		-ID : the ID of the AX12 you want to send the message
+ *				if the value 0xFE is used, the message is broadcasted
+ *				to all the devices in the network	
+ *		-LENGTH : length of the packet = N + 2 with N being
+ *						the number of parameters
+ *		-INSTRUCTION : what should the device do
+ *		-PARAM(s) : guess by yourself
+ *		-CHECK_SUM : = ~(ID + LENGTH + INSTRUCTION + PARAM_1
+ *					+ ... + PARAM_N) % 256
+ *					~ : NOT logical operation
+ *
+ * For a list of the possible OPERATIONS and the related PARAM, see the
+ * AX12 datasheet (available on the Google Drive of Telecom Robotics)
+ */
+
 void axWrite(uint8_t reg, uint8_t * vals, uint8_t len) {
     uint8_t buff[20];
     buff[0] = 0xFF;
