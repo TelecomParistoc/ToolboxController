@@ -72,6 +72,28 @@ static void getPosition();
 // checks if Ax-12 is moving
 static void isMoving();
 
+/* filter position values with a 3 values median filter 
+ * after each sample, call this function with the raw position. Returns 
+ * the filtered value. Works only if called once and only once per sample*/
+static int16_t positionMedianFilter(int16_t newValue) {
+    static int16_t last, beforeLast;
+    int16_t median;
+    if(last >= newValue) {
+        if(beforeLast >= newValue)
+            median = last >= beforeLast ? beforeLast : last;
+        else
+            median = newValue;
+    } else {
+        if(beforeLast >= newValue)
+            median = newValue;
+        else
+            median = last < beforeLast ? beforeLast : last;
+    }
+    beforeLast = last;
+    last = newValue;
+    return median;
+}
+
 static int debug;
 
 /* called once on startup */
