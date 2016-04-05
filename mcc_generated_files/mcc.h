@@ -62,6 +62,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "epwm2.h"
 #include "epwm3.h"
 #include "adc.h"
+#include "tmr0.h"
 
 #define _XTAL_FREQ  16000000
 

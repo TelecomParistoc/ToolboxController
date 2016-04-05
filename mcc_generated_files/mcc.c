@@ -124,6 +124,7 @@ void SYSTEM_Initialize(void) {
     EPWM2_Initialize();
     EPWM3_Initialize();
     ADC_Initialize();
+    TMR0_Initialize();
 }
 
 void OSCILLATOR_Initialize(void) {

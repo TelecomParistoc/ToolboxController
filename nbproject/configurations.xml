@@ -21,6 +21,7 @@
         <itemPath>mcc_generated_files/tmr2.h</itemPath>
         <itemPath>mcc_generated_files/ccp5.h</itemPath>
         <itemPath>mcc_generated_files/tmr1.h</itemPath>
+        <itemPath>mcc_generated_files/tmr0.h</itemPath>
       </logicalFolder>
       <itemPath>e-i2c.h</itemPath>
       <itemPath>i2c-interface.h</itemPath>
@@ -54,6 +55,7 @@
         <itemPath>mcc_generated_files/tmr2.c</itemPath>
         <itemPath>mcc_generated_files/ccp5.c</itemPath>
         <itemPath>mcc_generated_files/tmr1.c</itemPath>
+        <itemPath>mcc_generated_files/tmr0.c</itemPath>
       </logicalFolder>
       <itemPath>e-i2c.c</itemPath>
       <itemPath>i2c-interface.c</itemPath>
@@ -84,7 +86,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC8</languageToolchain>
-        <languageToolchainVersion>1.35</languageToolchainVersion>
+        <languageToolchainVersion>1.34</languageToolchainVersion>
         <platform>4</platform>
       </toolsSet>
       <compileType>

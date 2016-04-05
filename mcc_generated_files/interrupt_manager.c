@@ -70,6 +70,9 @@ void INTERRUPT_Initialize(void) {
     // TXI - high priority
     IPR1bits.TX1IP = 1;
 
+    // TMRI - high priority
+    INTCON2bits.TMR0IP = 1;
+
 
 
 }
@@ -86,6 +89,8 @@ void interrupt INTERRUPT_InterruptManager(void) {
         EUSART1_Receive_ISR();
     } else if (PIE1bits.TX1IE == 1 && PIR1bits.TX1IF == 1) {
         EUSART1_Transmit_ISR();
+    } else if (INTCONbits.TMR0IE == 1 && INTCONbits.TMR0IF == 1) {
+        TMR0_ISR();
     } else {
         //Unhandled Interrupt
     }

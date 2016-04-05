@@ -32,6 +32,7 @@ volatile consign_buffer consigns;
 volatile int16_t position;
 volatile int16_t parameter;
 volatile uint8_t forcing;
+volatile uint8_t update_flag;
 
 static uint16_t count;
 //static uint16_t max;

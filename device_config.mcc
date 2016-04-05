@@ -45,13 +45,14 @@
             <setting name="preemptHigh" option="true"/>
             <setting name="preemptLow" option="true"/>
             <setting name="useIPEN" option="true"/>
-            <file checksum="813403221" modified="false" name="interrupt_manager.c" path="mcc_generated_files/interrupt_manager.c"/>
+            <file checksum="2362552650" modified="false" name="interrupt_manager.c" path="mcc_generated_files/interrupt_manager.c"/>
             <file checksum="188830831" modified="false" name="interrupt_manager.h" path="mcc_generated_files/interrupt_manager.h"/>
             <interrupt module="MSSP1" name="SSPI" priority="2"/>
             <interrupt module="CCP5" name="CCPI" priority="2"/>
             <interrupt module="TMR1" name="TMRI" priority="2"/>
             <interrupt module="EUSART1" name="RCI" priority="2"/>
             <interrupt module="EUSART1" name="TXI" priority="2"/>
+            <interrupt module="TMR0" name="TMRI" priority="2"/>
         </manager>
         <manager generated="true" name="System" reloadPin="manual">
             <initializer comment="" name="Initialize">
@@ -107,8 +108,8 @@
             <setting name="EBTR0" option="OFF"/>
             <setting name="EBTRB" option="OFF"/>
             <setting name="generateConfigBits" option="true"/>
-            <file checksum="2412017470" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
-            <file checksum="2936884904" modified="false" name="mcc.h" path="mcc_generated_files/mcc.h"/>
+            <file checksum="55148008" modified="false" name="mcc.c" path="mcc_generated_files/mcc.c"/>
+            <file checksum="737891382" modified="false" name="mcc.h" path="mcc_generated_files/mcc.h"/>
         </manager>
     </managers>
     <modules>
@@ -454,6 +455,25 @@
             <resource customName="channel_AN0" function="AN0" name="RA0" type="pin"/>
             <file checksum="587890680" modified="true" name="adc.c" path="mcc_generated_files/adc.c"/>
             <file checksum="1040345715" modified="true" name="adc.h" path="mcc_generated_files/adc.h"/>
+        </module>
+        <module generated="true" mode="Timer" name="TMR0" order="12" reloadPin="manual" type="tmr_timer0">
+            <initializer comment="" name="Initialize">
+                <setting name="T08BIT" option="8-bit" register="T0CON"/>
+                <setting name="T0SE" option="Increment_hi_lo" register="T0CON"/>
+                <setting name="T0PS" option="1:64" register="T0CON"/>
+                <setting name="T0CS" option="FOSC/4" register="T0CON"/>
+                <setting name="TMR0ON" option="enabled" register="T0CON"/>
+                <setting name="PSA" option="assigned" register="T0CON"/>
+                <setting name="TMR0H" option="0" register="TMR0H"/>
+                <setting name="TMR0L" option="0" register="TMR0L"/>
+                <additionalSetting name="TMR0" option="0"/>
+                <additionalSetting name="extfreq" option="100 kHz"/>
+                <additionalSetting name="timerstart" option="enabled"/>
+            </initializer>
+            <setting name="TMRI" option="true"/>
+            <setting name="ticker" option="0"/>
+            <file checksum="1001190864" modified="false" name="tmr0.c" path="mcc_generated_files/tmr0.c"/>
+            <file checksum="721170149" modified="false" name="tmr0.h" path="mcc_generated_files/tmr0.h"/>
         </module>
     </modules>
 </configuration>

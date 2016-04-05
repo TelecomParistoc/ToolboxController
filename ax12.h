@@ -39,5 +39,6 @@ void ax12Manager();
 extern volatile consign_buffer consigns;
 extern volatile int16_t position;
 extern volatile uint8_t forcing;
+extern volatile uint8_t update_flag;
 
 #endif
