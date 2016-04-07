@@ -25,7 +25,7 @@ typedef struct {
 } consign;
 
 typedef struct {
-    consign orders[10];
+    consign orders[20];
     int begin;
     int end;
 } consign_buffer;

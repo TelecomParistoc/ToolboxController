@@ -35,7 +35,7 @@ int16_t masterGetPosition() {
 }
 
 static void setCommand(AX12order axorder, int16_t param) {
-    int next = (consigns.end + 1) % 10;
+    int next = (consigns.end + 1) % 20;
     consigns.orders[next].order = axorder;
     consigns.orders[next].param = param;
     consigns.end = next;

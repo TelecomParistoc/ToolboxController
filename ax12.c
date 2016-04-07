@@ -126,7 +126,7 @@ void ax12Manager() {
         return;
     }
     if (consigns.begin != consigns.end) {
-        int current = (consigns.begin + 1) % 10;
+        int current = (consigns.begin + 1) % 20;
         switch (consigns.orders[current].order) {
             case SET_MODE:
                 position = -1;
