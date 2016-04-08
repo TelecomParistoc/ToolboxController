@@ -171,18 +171,21 @@ void ax12Manager() {
         }
         return;
     }
-    switch (state) {
-        case DEFAULT_MODE:
-            getPosition();
-            break;
-        case MOVING_ASK_POS:
-            getPosition();
-            break;
-        case MOVING_ASK_FINISHED:
-            isMoving();
-            break;
-        case WHEEL_MODE:
-            break;
+    if(update_flag) {
+        update_flag = 0;
+        switch (state) {
+            case DEFAULT_MODE:
+                getPosition();
+                break;
+            case MOVING_ASK_POS:
+                getPosition();
+                break;
+            case MOVING_ASK_FINISHED:
+                isMoving();
+                break;
+            case WHEEL_MODE:
+                break;
+        }
     }
 }
 
