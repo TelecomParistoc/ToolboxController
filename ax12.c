@@ -241,31 +241,53 @@ void axRead(uint8_t reg, uint8_t len) {
 }
 
 void readBuffer() {
-    for (uint8_t i = 0; i < 4; i++)
+    uint8_t checksum = 0;
+    uint8_t tmp;
+    int16_t pos;
+    for (uint8_t i = 0; i < 2; i++)
         EUSART1_Read();
-    if (EUSART1_Read() & 32 == 32)
+    for (uint8_t i = 0; i < 2; i++)
+        checksum += EUSART1_Read();
+    tmp = EUSART1_Read();
+    checksum += tmp;
+    if (tmp & 32 == 32)
         if (! forcing){
             raiseInterrupt(AX12_FORCING);
             forcing = 1;
         }
     if (expected_answer_length == 8) {
-        position = EUSART1_Read();
-        position += (EUSART1_Read() << 8);
+        tmp = EUSART1_Read();
+        checksum += tmp;
+        pos = tmp;
+        tmp = EUSART1_Read();
+        checksum += tmp;
+        pos += (tmp << 8);
+        tmp = tmp = EUSART1_Read();
+        if(tmp == 255 - checksum)
+            position = pos;
+        else
+            printf("Corrupted answer 1, expected %d but got %d\n", tmp, 255 - checksum);
         if (state != DEFAULT_MODE)
             state = MOVING_ASK_FINISHED;
+        answer_status = 0;
     } else {
-        int foo = EUSART1_Read();
-        if (foo == 0) {
-            raiseInterrupt(AX12_FINISHED_MOVE);
-            state = DEFAULT_MODE;
-            answer_status = 0;
-            EUSART1_Read();
-            return;
+        tmp = EUSART1_Read();
+        checksum += tmp;
+        if(EUSART1_Read() == 255 - checksum){
+            if (tmp == 0) {
+                raiseInterrupt(AX12_FINISHED_MOVE);
+                answer_status = 0;
+                state = DEFAULT_MODE;
+                return;
+            }
         }
+        else {
+            printf("Corrupted answer 2\n");
+        }
+        answer_status = 0;
         state = MOVING_ASK_POS;
+        return;
     }
-    EUSART1_Read();
-    answer_status = 0;
 }
 
 void initAll() {
