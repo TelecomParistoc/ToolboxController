@@ -5,27 +5,6 @@
 #include <xc.h>
 #include "interrupts.h"
 
-#define axid  129
-#define axid2 130
-
-/*Ax 12 qui contrôle l'aimant*/
-
-#define vertical 532
-#define lacher 300
-
-/*Ax 12 qui positionne le système de pêche*/
-
-#define rentre 770
-#define horiz 480
-
-/*Ax 12 pince sens horaire*/
-#define hrentre 757
-#define hsorti  338
-
-/*Ax 12 pince sens trigo*/
-#define trentre 330
-#define tsorti  670
-
 volatile uint8_t activeID;
 volatile AX12state state;
 volatile consign_buffer consigns;
