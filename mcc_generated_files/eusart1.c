@@ -79,6 +79,7 @@ uint8_t EUSART1_Read(void) {
     eusart1RxCount--;
     PIE1bits.RC1IE = 1;
 
+    printf("%d ", readValue);
     return readValue;
 }
 

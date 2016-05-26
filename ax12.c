@@ -133,6 +133,7 @@ static void readBuffer() {
                 raiseInterrupt(AX12_FINISHED_MOVE);
                 answer_status = 0;
                 state = DEFAULT_MODE;
+                printf("Fin paquet\n");
                 return;
             }
         }
@@ -141,8 +142,10 @@ static void readBuffer() {
         }
         answer_status = 0;
         state = MOVING_ASK_POS;
+        printf("Fin paquet\n");
         return;
     }
+    printf("Fin paquet\n");
 }
 
 // Initializes all Ax-12
