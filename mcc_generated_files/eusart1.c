@@ -2,13 +2,12 @@
   Section: Included Files
  */
 #include "eusart1.h"
-#include <stdio.h>
 
 /**
   Section: Macro Declarations
  */
-#define EUSART1_TX_BUFFER_SIZE 8
-#define EUSART1_RX_BUFFER_SIZE 8
+#define EUSART1_TX_BUFFER_SIZE 32
+#define EUSART1_RX_BUFFER_SIZE 32
 
 /**
   Section: Global Variables
@@ -79,7 +78,6 @@ uint8_t EUSART1_Read(void) {
     eusart1RxCount--;
     PIE1bits.RC1IE = 1;
 
-    printf("%d ", readValue);
     return readValue;
 }
 
@@ -128,19 +126,6 @@ void EUSART1_Receive_ISR(void) {
         eusart1RxHead = 0;
     }
     eusart1RxCount++;
-    if(eusart1RxCount == expected_answer_length){
-        answer_status = 2;
-    }
-}
-
-void clearBuffer() {
-    while(eusart1RxCount)
-        EUSART1_Read();
-}
-
-void serial1Write(uint8_t * buf, uint8_t size){
-    for(uint8_t i = 0 ; i < size ; i++)
-        EUSART1_Write(buf[i]);
 }
 /**
   End of File

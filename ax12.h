@@ -3,42 +3,35 @@
 
 #include <stdint.h>
 
-typedef enum {
-    WHEEL_MODE,
-    DEFAULT_MODE,
-    MOVING_ASK_POS,
-    MOVING_ASK_FINISHED,
-} AX12state;
-
-typedef enum {
-    NONE,
-    SET_MODE,
-    SET_SPEED,
-    SET_POSITION,
-    SET_TORQUE,
-    RESET
-} AX12order;
-
-typedef struct {
-    AX12order order;
-    int16_t   param;
-} consign;
-
-typedef struct {
-    consign orders[20];
-    int begin;
-    int end;
-} consign_buffer;
-
 /* called once on startup */
 void ax12Setup();
 
 /* called in the main loop : performs all the needed updates */
 void ax12Manager();
 
-extern volatile consign_buffer consigns;
-extern volatile int16_t position;
-extern volatile uint8_t forcing;
-extern volatile uint8_t update_flag;
+/* set argument of a future write*/
+void setArg8(uint8_t arg);
+void setArg16(uint16_t arg);
+
+/* get answer argument (the answer are stored in a FIFO) */
+uint8_t getAnswer8();
+uint16_t getAnswer16();
+/* get answer ID (and consume the answer in FIFO, next read will return next answer in FIFO) */
+uint8_t getAnswerID();
+
+/* add a read8 packet to the fifo */
+void axRead8(uint16_t arg);
+/* add a read16 packet to the fifo */
+void axRead16(uint16_t arg);
+/* add a write8 packet to the fifo */
+void axWrite8(uint16_t arg);
+/* add a write16 packet to the fifo */
+void axWrite16(uint16_t arg);
+/* add a status packet to the fifo */
+void axStatus(uint8_t arg);
+/* set mode to default and set position */
+void axSetPosition(uint8_t id);
+/* set mode to wheel and set speed */
+void axSetSpeedWheel(uint8_t id);
 
 #endif

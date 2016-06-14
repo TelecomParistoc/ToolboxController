@@ -231,8 +231,8 @@
             <setting name="inputBuffer" option="8"/>
             <setting name="outputBuffer" option="8"/>
             <setting name="stdio" option="false"/>
-            <file checksum="2076698497" modified="true" name="eusart1.c" path="mcc_generated_files/eusart1.c"/>
-            <file checksum="13320695" modified="true" name="eusart1.h" path="mcc_generated_files/eusart1.h"/>
+            <file checksum="3576863759" modified="true" name="eusart1.c" path="mcc_generated_files/eusart1.c"/>
+            <file checksum="3501156643" modified="false" name="eusart1.h" path="mcc_generated_files/eusart1.h"/>
         </module>
         <module generated="true" mode="GPIO" name="GPIO" order="3" reloadPin="manual" type="GPIO">
             <resource customName="LOGICG" digital="true" direction="OUTPUT" function="RC0" module="GPIO" name="RC0" start="false" type="pin" wpu="false"/>

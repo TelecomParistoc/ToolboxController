@@ -30,6 +30,8 @@
       <itemPath>misc.h</itemPath>
       <itemPath>interrupts.h</itemPath>
       <itemPath>ax12-i2c.h</itemPath>
+      <itemPath>fifo.c</itemPath>
+      <itemPath>fifo.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -86,7 +88,7 @@
         <targetPluginBoard></targetPluginBoard>
         <platformTool>PICkit3PlatformTool</platformTool>
         <languageToolchain>XC8</languageToolchain>
-        <languageToolchainVersion>1.35</languageToolchainVersion>
+        <languageToolchainVersion>1.34</languageToolchainVersion>
         <platform>4</platform>
       </toolsSet>
       <compileType>
@@ -127,6 +129,7 @@
         <property key="optimization-level" value="9"/>
         <property key="optimization-set" value="default"/>
         <property key="optimization-speed" value="false"/>
+        <property key="optimization-stable-enable" value="false"/>
         <property key="preprocess-assembler" value="true"/>
         <property key="undefine-macros" value=""/>
         <property key="use-cci" value="false"/>

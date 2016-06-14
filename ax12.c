@@ -4,318 +4,119 @@
 #include <stdio.h>
 #include <xc.h>
 #include "interrupts.h"
+#include "fifo.h"
 
-volatile uint8_t activeID;
-volatile AX12state state;
-volatile consign_buffer consigns;
-volatile int16_t position;
-volatile int16_t parameter;
-volatile uint8_t forcing;
-volatile uint8_t update_flag;
+typedef enum {
+    NO_ANSWER,
+    CHECK_ANSWER,
+    STORE_ANSWER
+} answer_type;
 
-static uint16_t count;
-static int spam;
+static uint8_t sendBuffer[100];
+static struct fifo sendFifo;
 
-/* filter position values with a 3 values median filter 
- * after each sample, call this function with the raw position. Returns 
- * the filtered value. Works only if called once and only once per sample*/
-static int16_t positionMedianFilter(int16_t newValue) {
-    static int16_t last, beforeLast;
-    int16_t median;
-    if(last >= newValue) {
-        if(beforeLast >= newValue)
-            median = last >= beforeLast ? beforeLast : last;
-        else
-            median = newValue;
-    } else {
-        if(beforeLast >= newValue)
-            median = newValue;
-        else
-            median = last < beforeLast ? beforeLast : last;
+static uint8_t idBuffer[10];
+static uint16_t argBuffer[10];
+struct fifo receiveFifo;
+
+uint16_t axArg = 0;
+
+void setArg8(uint8_t arg) {
+    axArg = arg;
+}
+void setArg16(uint16_t arg) {
+    axArg = arg;
+}
+uint8_t getAnswer8() {
+    return argBuffer[receiveFifo.tail];
+}
+uint16_t getAnswer16() {
+    return argBuffer[receiveFifo.tail];
+}
+uint8_t getAnswerID() {
+    return readFifo(&receiveFifo);
+}
+
+//add a packet to the fifo
+static void queuePacket(uint8_t id, uint8_t type, uint8_t cmd, uint8_t paramLength, uint16_t param) {
+    uint8_t length = type == 0x01 ? 2 : 3 + paramLength;
+    writeFifo(&sendFifo, id);
+    writeFifo(&sendFifo, length);
+    writeFifo(&sendFifo, type);
+    if(paramLength>0) {
+        writeFifo(&sendFifo, cmd);
+        writeFifo(&sendFifo, param & 0xFF);
     }
-    beforeLast = last;
-    last = newValue;
-    return median;
+    if(paramLength==2)
+        writeFifo(&sendFifo, param >> 8);
 }
-
-/*
- * Allows you to send data to an AX12
- * 
- * A message has the following format : 
- * 	0xFF 0xFF ID LENGTH INSTRUCTION PARAM_1 ... PARAM_N CHECK_SUM
- * Explanation of the message format :
- * 		-0xFF 0xFF : indicates the start of an incoming packet.
- * 		-ID : the ID of the AX12 you want to send the message
- *				if the value 0xFE is used, the message is broadcasted
- *				to all the devices in the network	
- *		-LENGTH : length of the packet = N + 2 with N being
- *						the number of parameters
- *		-INSTRUCTION : what should the device do
- *		-PARAM(s) : guess by yourself
- *		-CHECK_SUM : = ~(ID + LENGTH + INSTRUCTION + PARAM_1
- *					+ ... + PARAM_N) % 256
- *					~ : NOT logical operation
- *
- * For a list of the possible OPERATIONS and the related PARAM, see the
- * AX12 datasheet (available on the Google Drive of Telecom Robotics)
- */
-
-// Writes len first values in array vals in registers beginning at reg of Ax-12(id)
-static void axWrite(uint8_t reg, uint8_t * vals, uint8_t len) {
-    uint8_t buff[20];
-    buff[0] = 0xFF;
-    buff[1] = 0xFF;
-    buff[2] = activeID;
-    buff[3] = len + 3;
-    buff[4] = 0x03;
-    buff[5] = reg;
-    uint8_t checksum = 0;
-    for (uint8_t i = 0; i < len; i++) {
-        buff[6 + i] = vals[i];
-        checksum += vals[i];
+// add a read8 packet to the fifo
+void axRead8(uint16_t arg) {
+    queuePacket(arg >> 8, 0x02, arg&0xFF, 1, 1);
+}
+// add a read16 packet to the fifo
+void axRead16(uint16_t arg) {
+    queuePacket(arg >> 8, 0x02, arg&0xFF, 1, 2);
+}
+// add a write8 packet to the fifo
+void axWrite8(uint16_t arg) {
+    queuePacket(arg >> 8, 0x03, arg&0xFF, 1, axArg);
+}
+// add a write16 packet to the fifo
+void axWrite16(uint16_t arg) {
+    queuePacket(arg >> 8, 0x03, arg&0xFF, 2, axArg);
+}
+// add a status packet to the fifo
+void axStatus(uint8_t arg) {
+    queuePacket(arg, 0x01, 0, 0, 0);
+}
+void axSetPosition(uint8_t id) {
+    queuePacket(id, 0x03, 0x08, 2, 0x03FF); // default mode
+    queuePacket(id, 0x03, 0x1E, 2, axArg); // set goal position
+}
+void axSetSpeedWheel(uint8_t id) {
+    queuePacket(id, 0x03, 0x08, 2, 0); // wheel mode
+    queuePacket(id, 0x03, 0x20, 2, axArg); // set goal speed
+}
+// send the next packet in the fifo
+static answer_type axSendPacket() {
+    uint8_t checksum, id, instruction, length, i, tmp;
+    id = readFifo(&sendFifo);
+    instruction = readFifo(&sendFifo);
+    length = readFifo(&sendFifo);
+    checksum = id+instruction+length;
+    EUSART1_Write(0xFF);
+    EUSART1_Write(0xFF);
+    EUSART1_Write(id);
+    EUSART1_Write(length);
+    EUSART1_Write(instruction);
+    // send parameters
+    for(i=2; i<length; i++) {
+        tmp = readFifo(&sendFifo);
+        checksum += tmp;
+        EUSART1_Write(tmp);
     }
-    checksum += len + 6 + activeID + reg;
-    buff[6 + len] = 255 - checksum;
-    serial1Write(buff, 7 + len);
-}
-
-// Asks to read len registers starting with register reg fom Ax-12(id)
-static void axRead(uint8_t reg, uint8_t len) {
-    uint8_t buff[8];
-    buff[0] = 0xFF;
-    buff[1] = 0xFF;
-    buff[2] = activeID;
-    buff[3] = 0x04;
-    buff[4] = 0x02;
-    buff[5] = reg;
-    buff[6] = len;
-    uint8_t checksum = 6 + activeID + reg + len;
-    buff[7] = 255 - checksum;
-    serial1Write(buff, 8);
-}
-
-// Reads the answer of the last axRead call
-static void readBuffer() {
-    uint8_t checksum = 0;
-    uint8_t tmp;
-    int16_t pos;
-    for (uint8_t i = 0; i < 2; i++)
-        EUSART1_Read();
-    for (uint8_t i = 0; i < 2; i++)
-        checksum += EUSART1_Read();
-    tmp = EUSART1_Read();
-    checksum += tmp;
-    if (tmp & 32 == 32)
-        if (! forcing){
-            raiseInterrupt(AX12_FORCING);
-            forcing = 1;
-        }
-    if (expected_answer_length == 8) {
-        tmp = EUSART1_Read();
-        checksum += tmp;
-        pos = tmp;
-        tmp = EUSART1_Read();
-        checksum += tmp;
-        pos += (tmp << 8);
-        tmp = tmp = EUSART1_Read();
-        if(tmp == 255 - checksum)
-            position = positionMedianFilter(pos);
-        else
-            printf("Corrupted answer 1, expected %d but got %d\n", tmp, 255 - checksum);
-        if (state != DEFAULT_MODE)
-            state = MOVING_ASK_FINISHED;
-        answer_status = 0;
-    } else {
-        tmp = EUSART1_Read();
-        checksum += tmp;
-        if(EUSART1_Read() == 255 - checksum){
-            if (tmp == 0) {
-                raiseInterrupt(AX12_FINISHED_MOVE);
-                answer_status = 0;
-                state = DEFAULT_MODE;
-                printf("Fin paquet\n");
-                return;
-            }
-        }
-        else {
-            printf("Corrupted answer 2\n");
-        }
-        answer_status = 0;
-        state = MOVING_ASK_POS;
-        printf("Fin paquet\n");
-        return;
-    }
-    printf("Fin paquet\n");
-}
-
-// Initializes all Ax-12
-static void initAll() {
-    activeID = 254;
-    state = WHEEL_MODE;
-    position = -1;
-    forcing = 0;
-    answer_status = 0;
-    count = 0;
-    uint8_t buff[2];
-    buff[0] = 1;
-    axWrite(24, buff, 1); // Disable torque
-    buff[0] = 255;
-    buff[1] = 3;
-    axWrite(34, buff, 2); // Sets Max Torque to maximum value
-    buff[0] = 2;
-    axWrite(18, buff, 1); // Shutdown ssi surchauffe
-    buff[0] = 1;
-    axWrite(16, buff, 1); // Status return only if READ
-    axWrite(24, buff, 1); // Enable torque
-}
-
-// sets parameter as goal position for Ax-12(id)
-static void setPosition() {
-    forcing = 0;
-    state = MOVING_ASK_FINISHED;
-    uint8_t buff[2];
-    buff[0] = (uint8_t) parameter;
-    buff[1] = parameter >> 8;
-    axWrite(30, buff, 2);
-}
-
-// sets parameter as goal speed for Ax-12(id)
-static void setSpeed() {
-    uint8_t buff[2];
-    buff[0] = (uint8_t) parameter;
-    buff[1] = parameter >> 8;
-    axWrite(32, buff, 2);
-}
-
-// sets parameter as max torque for Ax-12(id)
-static void setMaxTorque() {
-    uint8_t buff[2];
-    buff[0] = (uint8_t) parameter;
-    buff[1] = parameter >> 8;
-    axWrite(34, buff, 2);
-}
-
-// puts Ax-12(id) in wheel mode
-static void setWheelMode() {
-    state = WHEEL_MODE;
-    uint8_t buff[4];
-    for (int i = 0; i < 4; i++)
-        buff[i] = 0;
-    axWrite(6, buff, 4);
-}
-
-// puts Ax-12(id) in the default mode
-static void setDefaultMode() {
-    state = DEFAULT_MODE;
-    uint8_t buff[4];
-    buff[0] = 0;
-    buff[1] = 0;
-    buff[2] = 255;
-    buff[3] = 3;
-    axWrite(6, buff, 4);
-}
-
-// asks the position of an Ax-12
-static void getPosition() {
-    expected_answer_length = 8;
-    count = 0;
-    answer_status = 1;
-    axRead(36, 2);
-}
-
-// checks if Ax-12 is moving
-static void isMoving() {
-    expected_answer_length = 7;
-    count = 0;
-    answer_status = 1;
-    axRead(46, 1);
+    EUSART1_Write(~checksum); // checksum
+    if(id==0xFE)
+        return NO_ANSWER;
+    if(instruction==0x03)
+        return CHECK_ANSWER;
+    return STORE_ANSWER;
 }
 
 /* called once on startup */
-static void ax12Setup() {
-    printf("Hello World !\n");
-    consigns.begin = 0;
-    consigns.end = 0;
-    spam = 0;
-    initAll();
+void ax12Setup() {
+    // TODO : init fifo
+    
 }
 
 /* called in the main loop : performs all the needed updates */
-static void ax12Manager() {
-    if (answer_status == 1) {
-        count ++;
-        if(count == 1500){
-            count = 0;
-            answer_status = 0;
-            printf("Ax-12 %d timeout\n", activeID);
-            clearBuffer();
-        }
-        return;
-    }
-    if (answer_status == 2) {
-        readBuffer();
-        return;
-    }
-    if (consigns.begin != consigns.end) {
-        int current = (consigns.begin + 1) % 20;
-        switch (consigns.orders[current].order) {
-            case SET_MODE:
-                position = -1;
-                if(consigns.orders[current].param < 1000){
-                    activeID = consigns.orders[current].param;
-                    state = DEFAULT_MODE;
-                    setDefaultMode();
-                    getPosition();
-                } else {
-                    activeID = consigns.orders[current].param - 1000;
-                    state = WHEEL_MODE;
-                    setWheelMode();
-                }
-                printf("Mode set for %d\n", activeID);
-                break;
-            case SET_SPEED:
-                parameter = consigns.orders[current].param;
-                setSpeed();
-                printf("Set speed %d\n", parameter);
-                break;
-            case SET_POSITION:
-                parameter = consigns.orders[current].param;
-                setPosition();
-                printf("Set position %d\n", parameter);
-                break;
-            case SET_TORQUE:
-                parameter = consigns.orders[current].param;
-                setMaxTorque();
-                printf("Set torque %d\n", parameter);
-                break;
-            case RESET:
-                initAll();
-                printf("Reset ax-12\n");
-                break;
-        }
-        if (spam){
-            consigns.begin = current;
-            spam = 0;
-        }
-        else{
-            spam = 1;
-        }
-        return;
-    }
-    if(update_flag) {
-        update_flag = 0;
-        switch (state) {
-            case DEFAULT_MODE:
-                getPosition();
-                break;
-            case MOVING_ASK_POS:
-                getPosition();
-                break;
-            case MOVING_ASK_FINISHED:
-                isMoving();
-                break;
-            case WHEEL_MODE:
-                break;
-        }
+void ax12Manager() {
+    static answer_type expectingAnswer = NO_ANSWER;
+    // when we're not waiting for an answer and there's some packet to send
+    if(expectingAnswer == NO_ANSWER && sendFifo.fill != 0){
+        expectingAnswer = axSendPacket();
+    } else {
+        // TODO: handle answers and errors
     }
 }
