@@ -15,12 +15,8 @@ int8_t readStatus() {
 }
 
 void raiseInterrupt(interrupt_source src) {
-    INTERRUPT_GlobalInterruptHighDisable();
-    INTERRUPT_GlobalInterruptLowDisable();
     interruptFlags |= (uint8_t) src;
     INTOUT_SetDigitalOutput();
     INTOUT_SetHigh();
-    INTERRUPT_GlobalInterruptHighEnable();
-    INTERRUPT_GlobalInterruptLowEnable();
 }
 

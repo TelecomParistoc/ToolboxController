@@ -14,7 +14,7 @@ void PIN_MANAGER_Initialize(void) {
 
     LATC = 0x18;
     TRISC = 0xF8;
-    ANSELC = 0x00;
+    ANSELC = 0xC0;
 
     LATD = 0x00;
     TRISD = 0xFC;

@@ -115,7 +115,6 @@ void SYSTEM_Initialize(void) {
     INTERRUPT_Initialize();
     I2C1_Initialize();
     EUSART2_Initialize();
-    EUSART1_Initialize();
     TMR1_Initialize();
     CCP5_Initialize();
     TMR2_Initialize();
@@ -124,7 +123,6 @@ void SYSTEM_Initialize(void) {
     EPWM2_Initialize();
     EPWM3_Initialize();
     ADC_Initialize();
-    TMR0_Initialize();
 }
 
 void OSCILLATOR_Initialize(void) {
