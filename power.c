@@ -12,8 +12,8 @@
 #define LOGIC_LOW_BAT 153
 #define LOGIC_MIDDLE_BAT 185
 
-#define MOTOR_LOW_BAT 73
-#define MOTOR_MIDDLE_BAT 41
+#define MOTOR_LOW_BAT 107
+#define MOTOR_MIDDLE_BAT 73
 
 // battery voltage = (logicPowerLevel*2 + 448)*0.0139 (in volts)
 uint8_t logicPowerLevel = 0;
@@ -25,23 +25,23 @@ uint16_t motorPowerLevelPeriod = 0;
 
 static void updateMotorPowerLEDs() {
     if(motorPowerLevel < MOTOR_LOW_BAT)
-        MOTORG_SetLow();
-    else
         MOTORG_SetHigh();
-    if(motorPowerLevel > MOTOR_MIDDLE_BAT)
-        MOTORR_SetLow();
     else
+        MOTORG_SetLow();
+    if(motorPowerLevel > MOTOR_MIDDLE_BAT)
         MOTORR_SetHigh();
+    else
+        MOTORR_SetLow();
 }
 static void updateLogicPowerLEDs() {
     if(logicPowerLevel > LOGIC_LOW_BAT)
-        LOGICG_SetLow();
-    else
         LOGICG_SetHigh();
-    if(logicPowerLevel < LOGIC_MIDDLE_BAT)
-        LOGICR_SetLow();
     else
+        LOGICG_SetLow();
+    if(logicPowerLevel < LOGIC_MIDDLE_BAT)
         LOGICR_SetHigh();
+    else
+        LOGICR_SetLow();
 }
 
 inline void powerManager() {
@@ -86,8 +86,8 @@ void setCCP5period(uint16_t period) {
     if(period == 0) {
         isValid = 0;
         // turn of the LED
-        MOTORR_SetHigh();
-        MOTORG_SetHigh();
+        MOTORR_SetLow();
+        MOTORG_SetLow();
         return;
     }
     if(isValid)
